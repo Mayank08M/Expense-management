@@ -1,0 +1,72 @@
+.maindiv {
+  display: flex;
+  margin: 2rem;
+  align-items: center;
+}
+.leftdiv {
+  text-align: left;
+}
+.getstarted {
+  background-color: #1976d2;
+  color: #fff;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 5px;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+}
+
+.getstarted:hover {
+  background-color: #005bb5; /* Darker shade on hover */
+}
+.highlight {
+    color: #1976d2;
+  }
+.sec2{
+  padding: 20px 40px;
+  text-align: left;
+}
+.faq {
+  margin-top: 40px;
+}
+
+.faqItem {
+  margin-bottom: 20px;
+  cursor: pointer;
+}
+
+.faqHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background-color: #f1f1f1;
+  border-radius: 5px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.faqHeader:hover {
+  background-color: #e0e0e0;
+}
+
+.dropdownIcon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.answer {
+  padding: 10px;
+  background-color: #f9f9f9;
+  border-left: 3px solid #007bff;
+  border-radius: 5px;
+  margin-top: 10px;
+  font-size: 1rem;
+  color: #555;
+}
