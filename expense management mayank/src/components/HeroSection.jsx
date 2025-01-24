@@ -1,9 +1,18 @@
-import React from "react";
+import React, { useState } from "react"; // Import useState
 import styles from "../styles/herosection.module.css";
 import heroImg from "../assets/images/heroImage.png";
 import magnetMoney from "../assets/images/magnetMoney.png";
+import manExpenses from "../assets/images/manExpenses.png";
+import { FaChevronDown, FaChevronUp } from "react-icons/fa"; // Add chevron icons
 
 const HeroSection = () => {
+  const [activeIndex, setActiveIndex] = useState(null); // Define the state to track the active index
+
+  // Toggle the answer visibility
+  const toggleAnswer = (index) => {
+    setActiveIndex(activeIndex === index ? null : index); // If the same item is clicked, collapse it; otherwise, expand it
+  };
+
   return (
     <>
       <div className={styles.maindiv}>
@@ -21,14 +30,14 @@ const HeroSection = () => {
         </div>
 
         <div>
-          <img src={heroImg} height={500} width={550}></img>
+          <img src={heroImg} height={500} width={550} alt="Hero Image" />
         </div>
       </div>
       <div>
         <h2>What is Expenses Management?</h2>
-        <div style={{display: "flex", alignItems: "center"}}>
+        <div style={{ display: "flex", alignItems: "center" }}>
           <div>
-            <img src={magnetMoney} height={500} width={600}></img>
+            <img src={magnetMoney} height={500} width={600} alt="Magnet Money" />
           </div>
           <div className={styles.sec2}>
             <p>
@@ -44,9 +53,7 @@ const HeroSection = () => {
               place is essential for improving your overall financial health.
               <br />
               <br />
-              That's where <span className={styles.highlight}>
-                BudgetBuddy
-              </span>{" "}
+              That's where <span className={styles.highlight}>BudgetBuddy</span>{" "}
               comes in—a platform designed to revolutionize the way you manage
               your money. With BudgetBuddy, you gain access to powerful tools
               and resources that simplify expense management. From tracking
@@ -64,46 +71,53 @@ const HeroSection = () => {
       </div>
       <div>
         <h2>Why Choose BudgetBuddy?</h2>
+        <div style={{display: "flex", justifyContent: "space-evenly", alignItems: "center"}}>
+
         <div className={styles.faq}>
-          <div className={styles.faqItem}>
-            <h3>1. How can BudgetBuddy help me save money?</h3>
-            <p>
-              BudgetBuddy provides insights into your spending habits, helping
-              you identify unnecessary expenses and allocate your funds more
-              efficiently. By setting goals and tracking your progress, you can
-              optimize your spending and increase your savings.
-            </p>
-          </div>
-          <div className={styles.faqItem}>
-            <h3>2. Is BudgetBuddy suitable for businesses?</h3>
-            <p>
-              Yes! BudgetBuddy is designed to handle both personal and business
-              expenses. You can track business-related costs, categorize them,
-              and generate reports to keep your finances in check.
-            </p>
-          </div>
-          <div className={styles.faqItem}>
-            <h3>3. Is my data safe with BudgetBuddy?</h3>
-            <p>
-              Absolutely! We prioritize your privacy and use advanced security
-              measures to ensure your financial data is safe and encrypted.
-            </p>
-          </div>
-          <div className={styles.faqItem}>
-            <h3>4. Can I use BudgetBuddy on my mobile device?</h3>
-            <p>
-              Yes, BudgetBuddy is available as a mobile-friendly platform,
-              allowing you to manage your expenses on the go with ease.
-            </p>
-          </div>
-          <div className={styles.faqItem}>
-            <h3>5. Do I need any financial knowledge to use BudgetBuddy?</h3>
-            <p>
-              Not at all! BudgetBuddy is designed to be user-friendly and easy
-              to navigate. It offers simple tools that help you manage your
-              finances, regardless of your financial expertise.
-            </p>
-          </div>
+          {[
+            {
+              question: "How can BudgetBuddy help me save money?",
+              answer:
+                "BudgetBuddy provides insights into your spending habits, helping you identify unnecessary expenses and allocate your funds more efficiently. By setting goals and tracking your progress, you can optimize your spending and increase your savings.",
+            },
+            {
+              question: "Is BudgetBuddy suitable for businesses?",
+              answer:
+                "Yes! BudgetBuddy is designed to handle both personal and business expenses. You can track business-related costs, categorize them, and generate reports to keep your finances in check.",
+            },
+            {
+              question: "Is my data safe with BudgetBuddy?",
+              answer:
+                "Absolutely! We prioritize your privacy and use advanced security measures to ensure your financial data is safe and encrypted.",
+            },
+            {
+              question: "Do I need any financial knowledge to use BudgetBuddy?",
+              answer:
+                "Not at all! BudgetBuddy is designed to be user-friendly and easy to navigate. It offers simple tools that help you manage your finances, regardless of your financial expertise.",
+            },
+          ].map((faq, index) => (
+            <div className={styles.faqItem} key={index}>
+              <div
+                className={styles.faqHeader}
+                onClick={() => toggleAnswer(index)} // Toggle answer visibility
+              >
+                <h3>{faq.question}</h3>
+                <span className={styles.dropdownIcon}>
+                  {activeIndex === index ? (
+                    <FaChevronUp size={20} />
+                  ) : (
+                    <FaChevronDown size={20} />
+                  )}
+                </span>
+              </div>
+              {activeIndex === index && <p className={styles.answer}>{faq.answer}</p>} {/* Show answer if activeIndex matches */}
+            </div>
+          ))}
+        </div>
+
+        <div>
+        <img src={manExpenses} height={500} width={500} alt="Magnet Money" />
+        </div>
         </div>
       </div>
     </>
