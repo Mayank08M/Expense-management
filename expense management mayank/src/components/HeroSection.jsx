@@ -4,6 +4,7 @@ import heroImg from "../assets/images/heroImage.png";
 import magnetMoney from "../assets/images/magnetMoney.png";
 import manExpenses from "../assets/images/manExpenses.png";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa"; // Add chevron icons
+import Navbar from "./Navbar";
 
 const HeroSection = () => {
   const [activeIndex, setActiveIndex] = useState(null); // Define the state to track the active index
@@ -15,6 +16,7 @@ const HeroSection = () => {
 
   return (
     <>
+    <Navbar />
       <div className={styles.maindiv}>
         <div className={styles.leftdiv}>
           <h1>

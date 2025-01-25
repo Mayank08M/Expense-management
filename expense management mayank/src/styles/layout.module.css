@@ -1,0 +1,13 @@
+.layout {
+    display: flex;
+    height: 100vh; /* Full viewport height */
+    width: 100vw; /* Full viewport width */
+  }
+  
+  .mainContent {
+    flex: 1; /* Main content takes the remaining space */
+    padding: 20px;
+    overflow-y: auto; /* Enable scrolling for overflow */
+    background-color: #f9f9f9; /* Optional background for the content */
+  }
+  

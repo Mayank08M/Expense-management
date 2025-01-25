@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import styles from "../styles/login.module.css";
+import Navbar from "../components/Navbar";
 
 const SignUp = () => {
   const [email, setEmail] = useState("");
@@ -38,6 +39,7 @@ const SignUp = () => {
 
   return (
     <>
+    <Navbar />
       <div style={{ display: "flex", justifyContent: "center" }}>
         <div className={styles.wrapper}>
           <form onSubmit={handleLogin}>
