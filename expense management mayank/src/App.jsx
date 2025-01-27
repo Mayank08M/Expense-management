@@ -21,7 +21,7 @@ function App() {
         <Route path="/signup" element={<SignUp />} />
 
         {/* Routes with the Layout (SideBar included) */}
-        <Route path="/" element={<Layout />}>
+        <Route element={<Layout />}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/manage-expense" element={<ManageExpense />} />
           <Route path="/manage-income" element={<ManageIncome />} />

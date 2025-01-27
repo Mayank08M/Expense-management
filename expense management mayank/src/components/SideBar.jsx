@@ -1,7 +1,11 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import logo from "../assets/logo.png";
-import { MdOutlineDashboard, MdCurrencyRupee, MdOutlineLocalMall } from "react-icons/md";
+import logo from "../assets/images/horizontallogo.png";
+import {
+  MdOutlineDashboard,
+  MdCurrencyRupee,
+  MdOutlineLocalMall,
+} from "react-icons/md";
 import { GoChecklist } from "react-icons/go";
 import { TbFileSpreadsheet } from "react-icons/tb";
 import { BsGraphUpArrow } from "react-icons/bs";
@@ -12,7 +16,7 @@ const SideBar = () => {
     <div className={styles.maindiv}>
       <div>
         <NavLink to="/" className={styles.logo}>
-          <img src={logo} height={80} width={80} alt="Logo" />
+          <img src={logo} height={110} width={120} alt="Logo" />
         </NavLink>
       </div>
       <NavLink
