@@ -1,6 +1,7 @@
 require("dotenv").config();
 const mongoose = require("mongoose");
 const express = require("express");
+const routes = require('./routes/index')
 
 const app = express();
 app.use(express.static("public"));
@@ -25,6 +26,8 @@ mongoose.connection.on("error", (err) => {
 mongoose.connection.on("disconnected", () => {
   console.log("⚠️ MongoDB disconnected.");
 });
+
+app.use('/api', routes)
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);

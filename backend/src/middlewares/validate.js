@@ -1,6 +1,6 @@
 const httpStatus = require('http-status');
-const ApiError = require('../utils/handler/ApiError.handler');
-const pick = require('../utils/handler/pick.handler');
+const ApiError = require('../utils/handlers/ApiError.handler');
+const pick = require('../utils/handlers/pick.handler');
 
 const validate = (schema) => (req, res, next) => {
 	const validSchema = pick(schema, [
