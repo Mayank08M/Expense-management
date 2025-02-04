@@ -1,7 +1,9 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";  // Import useNavigate from react-router-dom
 import styles from "../styles/login.module.css";
 import Navbar from "../components/Navbar";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"; // Make sure to import the CSS
 
 const SignUp = () => {
   const [fullName, setFullName] = useState(""); // For full name
@@ -10,41 +12,63 @@ const SignUp = () => {
   const [rePassword, setRePassword] = useState(""); // For re-entering password
   const [mobileNumber, setMobileNumber] = useState(""); // For mobile number
 
+  const navigate = useNavigate(); // Use useNavigate for redirection
+
   const handleSignUp = async (e) => {
     e.preventDefault(); // Prevent the default form submission behavior
 
     // Validate that both passwords match
     if (password !== rePassword) {
-      alert("Passwords do not match!");
+      toast.error("Passwords do not match!", {
+        position: "top-center",
+        autoClose: 3000,
+      });
       return;
     }
 
     const payload = {
       fullName: fullName,
-      email: email,
+      emailAddress: email,
       password: password,
+      confirmPassword: rePassword,
       mobileNumber: mobileNumber,
     };
 
     try {
-      const response = await fetch("https://your-api-endpoint.com/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
+      const response = await fetch(
+        import.meta.env.VITE_BASE_URL + "api/auth/signup",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      // Log response status and body
+      const data = await response.json();
 
       if (response.ok) {
-        const data = await response.json();
-        console.log("Sign-up successful:", data);
-        // Handle success (e.g., navigate to another page or show success message)
+        toast.success(data.message || "Sign-up successful!", {
+          position: "top-center",
+          autoClose: 1000,
+        });
+        setTimeout(() => {
+          navigate("/dashboard");  // Redirect to the dashboard on successful sign-up
+        }, 1500);  // Redirect to the dashboard on successful sign-up
       } else {
-        console.error("Sign-up failed:", response.status);
-        // Handle error (e.g., show an error message)
+        toast.error(data.message || "Sign-up failed. Please try again.", {
+          position: "top-center",
+          autoClose: 3000,
+        });
       }
     } catch (error) {
       console.error("Error occurred during sign-up:", error);
+      toast.error("An error occurred. Please try again.", {
+        position: "top-center",
+        autoClose: 3000,
+      });
     }
   };
 
@@ -127,6 +151,7 @@ const SignUp = () => {
           </form>
         </div>
       </div>
+      <ToastContainer /> {/* Ensure this is included */}
     </>
   );
 };

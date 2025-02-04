@@ -9,7 +9,7 @@
  * @param {boolean} [isOperational=true] - Indicates if the error is operational or not.
  * @param {string} [stack=""] - Stack trace for the error (optional, defaults to an empty string).
  */
-class ApiError extends Error {
+class ApiError extends Error {	
 	constructor(
 		statusCode,
 		message = 'Something went wrong',

@@ -2,44 +2,61 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import styles from "../styles/login.module.css";
 import Navbar from "../components/Navbar";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleLogin = async (e) => {
-    e.preventDefault(); // Prevent the default form submission behavior
+    e.preventDefault();
 
     const payload = {
-      email: email,
+      emailAddress: email,
       password: password,
     };
 
     try {
-      const response = await fetch("https://your-api-endpoint.com/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
+      const response = await fetch(
+        import.meta.env.VITE_BASE_URL + "api/auth/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      const data = await response.json();
 
       if (response.ok) {
-        const data = await response.json();
+        toast.success(data.message || "Login successful!", {
+          position: "top-center",
+          autoClose: 3000, // Toast disappears after 3 seconds
+        });
         console.log("Login successful:", data);
-        // Handle success (e.g., navigate to another page or store token in localStorage)
+        // You can redirect the user or store the token in localStorage
       } else {
-        console.error("Login failed:", response.status);
-        // Handle error (e.g., show an error message)
+        toast.error(data.message || "Login failed. Please try again.", {
+          position: "top-center",
+          autoClose: 3000,
+        });
+        console.error("Login failed:", data);
       }
     } catch (error) {
+      toast.error("An error occurred. Please try again.", {
+        position: "top-center",
+        autoClose: 3000,
+      });
       console.error("Error occurred during login:", error);
     }
   };
 
   return (
     <>
-    <Navbar />
+      <Navbar />
       <div style={{ display: "flex", justifyContent: "center" }}>
         <div className={styles.wrapper}>
           <form onSubmit={handleLogin}>
@@ -83,6 +100,7 @@ const Login = () => {
           </form>
         </div>
       </div>
+      <ToastContainer /> {/* Ensure this is included */}
     </>
   );
 };
