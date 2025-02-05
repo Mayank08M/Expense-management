@@ -7,6 +7,10 @@ const defaultRoutes = [
 		path: '/auth',
 		route: require('./auth'),
 	},
+	{
+		path: '/sheet',
+		route: require('./sheet'),
+	},
 ];
 
 defaultRoutes.forEach((route) => {

@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 const { AsyncHandler } = require("../../utils/handlers/Async.handler");
 const ApiError = require("../../utils/handlers/ApiError.handler");
 const ApiResponse = require("../../utils/handlers/ApiResponse.handler");
+const { tokenService } = require("../../services");
 
 module.exports = {
     login: AsyncHandler(async (req, res) => {
@@ -19,10 +20,12 @@ module.exports = {
         if (!isPasswordCorrect) {
             throw new ApiError(400, "Invalid credentials.");
         }
+        // console.log(existingUser)
+        const tokens = await tokenService.generateAuthTokens(existingUser);
 
         res
             .status(200)
-            .json(new ApiResponse(200, {}, 'Logged in succesfully.'));
+            .json(new ApiResponse(200, { ...tokens }, 'Logged in succesfully.'));
 
     }),
     signUp: AsyncHandler(async (req, res) => {

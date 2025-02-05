@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import Cookies from "js-cookie";
+import { Link, useNavigate } from "react-router-dom";
 import styles from "../styles/login.module.css";
 import Navbar from "../components/Navbar";
 import { ToastContainer, toast } from "react-toastify";
@@ -8,6 +9,8 @@ import "react-toastify/dist/ReactToastify.css";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -32,12 +35,16 @@ const Login = () => {
       const data = await response.json();
 
       if (response.ok) {
+        localStorage.setItem("authToken", data.data.access.token);
         toast.success(data.message || "Login successful!", {
           position: "top-center",
-          autoClose: 3000, // Toast disappears after 3 seconds
+          autoClose: 1000, // Toast disappears after 3 seconds
         });
         console.log("Login successful:", data);
-        // You can redirect the user or store the token in localStorage
+
+        setTimeout(() => {
+          navigate("/dashboard"); // Redirect to the dashboard on successful sign-up
+        }, 1500);
       } else {
         toast.error(data.message || "Login failed. Please try again.", {
           position: "top-center",

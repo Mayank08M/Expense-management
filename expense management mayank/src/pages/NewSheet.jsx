@@ -2,29 +2,81 @@ import React, { useState } from "react";
 import { InputText } from "primereact/inputtext";
 
 const NewSheet = () => {
-  const [value, setValue] = useState(""); // For input value (Sheet Name)
-  const [isFocused, setIsFocused] = useState(false); // For tracking focus state
-  const [listType, setListType] = useState(""); // For dropdown value (Expense/Income)
-  const [columnsCount, setColumnsCount] = useState(0); // For number of columns
-  const [columns, setColumns] = useState([]); // For column names
+  const [value, setValue] = useState(""); // Sheet Name
+  const [isFocused, setIsFocused] = useState(false); // Focus state
+  const [listType, setListType] = useState(""); // Expense/Income
+  const [columnsCount, setColumnsCount] = useState(0); // Number of columns
+  const [columns, setColumns] = useState([]); // Column names
+  const [loading, setLoading] = useState(false); // API call loading state
+  const [message, setMessage] = useState(""); // Success/Error message
 
-  // Function to handle the number of columns input change
+  // Handle change in number of columns
   const handleColumnsCountChange = (e) => {
-    const count = e.target.value;
+    const count = Number(e.target.value);
     setColumnsCount(count);
-    setColumns(Array(Number(count)).fill("")); // Initialize columns with empty values
+    setColumns(Array(count).fill("")); // Reset column names
   };
 
-  // Function to handle column name change
+  // Handle change in column names
   const handleColumnNameChange = (index, value) => {
     const updatedColumns = [...columns];
     updatedColumns[index] = value;
     setColumns(updatedColumns);
   };
 
+  // API Call to Create a New Sheet
+  const handleCreateSheet = async () => {
+    if (!value || !listType || columns.length === 0) {
+      setMessage("Please fill all fields.");
+      return;
+    }
+
+    if (!columns.includes("category")) {
+      setMessage("Columns must include 'category'.");
+      return;
+    }
+
+    setLoading(true);
+    setMessage("");
+
+    try {
+      const response = await fetch(
+        import.meta.env.VITE_BASE_URL + "api/sheet/new-sheet",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-auth-token": localStorage.getItem("authToken"), // Change this line
+          },
+          body: JSON.stringify({
+            name: value,
+            type: listType,
+            columns,
+            entries: [], // Assuming empty entries initially
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setMessage("Sheet created successfully!");
+        setValue("");
+        setListType("");
+        setColumnsCount(0);
+        setColumns([]);
+      } else {
+        setMessage(data.message || "Failed to create sheet.");
+      }
+    } catch (error) {
+      setMessage("Error creating sheet. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <>
-      {/* Title */}
       <div
         style={{
           textAlign: "left",
@@ -36,24 +88,16 @@ const NewSheet = () => {
         New Sheet
       </div>
 
-      {/* Username Input Field with Floating Label */}
+      {/* Sheet Name Input */}
       <div
         style={{
           display: "flex",
           justifyContent: "center",
-          marginBottom: "30px", // Added gap between fields
+          marginBottom: "30px",
         }}
       >
-        <div
-          style={{
-            position: "relative",
-            width: "100%",
-            maxWidth: "400px",
-          }}
-        >
-          {/* Input Field for Sheet Name */}
+        <div style={{ position: "relative", width: "100%", maxWidth: "400px" }}>
           <InputText
-            id="username"
             value={value}
             onChange={(e) => setValue(e.target.value)}
             onFocus={() => setIsFocused(true)}
@@ -66,9 +110,7 @@ const NewSheet = () => {
               borderRadius: "4px",
             }}
           />
-          {/* Floating Label for Sheet Name */}
           <label
-            htmlFor="username"
             style={{
               position: "absolute",
               left: "10px",
@@ -85,22 +127,15 @@ const NewSheet = () => {
         </div>
       </div>
 
-      {/* List Type Dropdown with Floating Label */}
+      {/* List Type Dropdown */}
       <div
         style={{
           display: "flex",
           justifyContent: "center",
-          marginBottom: "30px", // Added gap between fields
+          marginBottom: "30px",
         }}
       >
-        <div
-          style={{
-            position: "relative",
-            width: "100%",
-            maxWidth: "400px",
-          }}
-        >
-          {/* Dropdown for List Type */}
+        <div style={{ position: "relative", width: "100%", maxWidth: "400px" }}>
           <select
             value={listType}
             onChange={(e) => setListType(e.target.value)}
@@ -112,18 +147,15 @@ const NewSheet = () => {
               borderRadius: "4px",
               background: "white",
               color: listType ? "#000" : "#888",
-              paddingRight: "30px", // Add extra padding to the right to account for the dropdown arrow
             }}
           >
             <option value="" disabled>
               Select
             </option>
-            <option value="expense">Expense</option>
-            <option value="income">Income</option>
+            <option value="Expense">Expense</option>
+            <option value="Income">Income</option>
           </select>
-          {/* Floating Label for Dropdown */}
           <label
-            htmlFor="listType"
             style={{
               position: "absolute",
               left: "10px",
@@ -145,19 +177,11 @@ const NewSheet = () => {
         style={{
           display: "flex",
           justifyContent: "center",
-          marginBottom: "30px", // Added gap between fields
+          marginBottom: "30px",
         }}
       >
-        <div
-          style={{
-            position: "relative",
-            width: "100%",
-            maxWidth: "400px",
-          }}
-        >
-          {/* Input Field for Number of Columns */}
+        <div style={{ position: "relative", width: "100%", maxWidth: "400px" }}>
           <InputText
-            id="columnsCount"
             type="number"
             value={columnsCount}
             onChange={handleColumnsCountChange}
@@ -169,9 +193,7 @@ const NewSheet = () => {
               borderRadius: "4px",
             }}
           />
-          {/* Floating Label for Number of Columns */}
           <label
-            htmlFor="columnsCount"
             style={{
               position: "absolute",
               left: "10px",
@@ -199,13 +221,8 @@ const NewSheet = () => {
           }}
         >
           <div
-            style={{
-              position: "relative",
-              width: "100%",
-              maxWidth: "400px",
-            }}
+            style={{ position: "relative", width: "100%", maxWidth: "400px" }}
           >
-            {/* Column Name Input */}
             <InputText
               value={columns[index]}
               onChange={(e) => handleColumnNameChange(index, e.target.value)}
@@ -217,7 +234,6 @@ const NewSheet = () => {
                 borderRadius: "4px",
               }}
             />
-            {/* Floating Label for Column Name */}
             <label
               style={{
                 position: "absolute",
@@ -237,22 +253,37 @@ const NewSheet = () => {
       ))}
 
       {/* Create Sheet Button */}
-      <div
-        style={{
-          textAlign: "center",
-        }}
-      >
+      <div style={{ textAlign: "center" }}>
         <button
+          onClick={handleCreateSheet}
+          disabled={loading}
           style={{
-            textAlign: "left",
             fontSize: "18px",
             fontWeight: "bold",
             marginBottom: "20px",
+            padding: "10px 20px",
+            borderRadius: "4px",
+            background: "#007bff",
+            color: "#fff",
+            border: "none",
+            cursor: "pointer",
           }}
         >
-          Create Sheet
+          {loading ? "Creating..." : "Create Sheet"}
         </button>
       </div>
+
+      {/* Message Display */}
+      {message && (
+        <p
+          style={{
+            textAlign: "center",
+            color: message.includes("success") ? "green" : "red",
+          }}
+        >
+          {message}
+        </p>
+      )}
     </>
   );
 };

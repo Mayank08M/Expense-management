@@ -55,7 +55,7 @@ const SignUp = () => {
           autoClose: 1000,
         });
         setTimeout(() => {
-          navigate("/dashboard");  // Redirect to the dashboard on successful sign-up
+          navigate("/login");  // Redirect to the dashboard on successful sign-up
         }, 1500);  // Redirect to the dashboard on successful sign-up
       } else {
         toast.error(data.message || "Sign-up failed. Please try again.", {
