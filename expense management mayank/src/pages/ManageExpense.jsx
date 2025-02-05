@@ -1,9 +1,35 @@
-import React from "react";
-import nolist from "../assets/images/nolist.png";
+import React, { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
+import nolist from "../assets/images/nolist.png";
 
 const ManageExpense = () => {
-  const data = null;
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(import.meta.env.VITE_BASE_URL + "api/sheet/getAll", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "x-auth-token": localStorage.getItem("authToken"), // Change this line
+          },
+        }); // Replace with actual API URL
+        const result = await response.json();
+        setData(result.data);
+      } catch (err) {
+        setError("Failed to fetch data");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>{error}</p>;
 
   return (
     <>
@@ -17,7 +43,7 @@ const ManageExpense = () => {
       >
         Manage Expense
       </div>
-      {data === null ? ( // Conditional rendering for when data is null
+      {data === null || data.length === 0 ? (
         <div
           style={{
             display: "flex",
@@ -36,8 +62,30 @@ const ManageExpense = () => {
         </div>
       ) : (
         <div>
-          {/* Render something else when data is not null */}
-          <p>Data is available.</p>
+          <table border="1" style={{ width: "100%", textAlign: "left" }}>
+            <thead>
+              <tr>
+                <th>Sheet Name</th>
+                <th>List Type</th>
+                <th>Created At</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.map((expense) => (
+                <tr key={expense._id}>
+                  <td>{expense.name}</td>
+                  <td>{expense.type}</td>
+                  <td>{new Date(expense.createdAt).toLocaleDateString()}</td>
+                  <td>
+                    <NavLink to={`/expense/${expense._id}`}>
+                      <button>View</button>
+                    </NavLink>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
     </>

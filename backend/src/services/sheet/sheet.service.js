@@ -20,5 +20,6 @@ module.exports = {
         });
 
         return sheet;
-    }
+    },
+    getAllSheets: async (userId) => await sheetModel.find({ userId }).exec()
 }
