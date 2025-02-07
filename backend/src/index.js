@@ -5,7 +5,9 @@ const routes = require('./routes/index');
 const logger = require("./config/logger");
 const { errorConverter, errorHandler } = require("./middlewares/error");
 const cors = require('cors');
+const httpStatus = require('http-status');
 const corsOptions = require('./config/cors');
+const ApiError = require("./utils/handlers/ApiError.handler");
 
 const app = express();
 app.use(express.static("public"));
@@ -18,7 +20,7 @@ const PORT = process.env.PORT || 8000;
 // Connect to MongoDB with logging
 mongoose
 	.connect(process.env.MONGODB_URI)
-	.then(() => console.log("✅ MongoDB Connected Successfully"))
+	.then(() => console.log("✅ MongoDB Connected Successfully "))
 	.catch((err) => console.error("❌ MongoDB Connection Error:", err));
 
 mongoose.connection.on("connected", () => {

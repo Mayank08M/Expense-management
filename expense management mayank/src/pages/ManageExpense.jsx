@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import nolist from "../assets/images/nolist.png";
+import apiService from "../services/api.service"; // Import API service
 
 const ManageExpense = () => {
   const [data, setData] = useState(null);
@@ -8,24 +9,24 @@ const ManageExpense = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchData = async () => {
+    let isMounted = true; // To prevent state updates after unmounting
+
+    const fetchExpenses = async () => {
       try {
-        const response = await fetch(import.meta.env.VITE_BASE_URL + "api/sheet/getAll", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            "x-auth-token": localStorage.getItem("authToken"), // Change this line
-          },
-        }); // Replace with actual API URL
-        const result = await response.json();
-        setData(result.data);
+        const response = await apiService.getAllExpenseSheets();
+        if (isMounted) setData(response.data?.data || []);
       } catch (err) {
-        setError("Failed to fetch data");
+        if (isMounted) setError("Failed to fetch data");
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     };
-    fetchData();
+
+    fetchExpenses();
+
+    return () => {
+      isMounted = false; // Cleanup function to prevent memory leaks
+    };
   }, []);
 
   if (loading) return <p>Loading...</p>;
@@ -62,7 +63,7 @@ const ManageExpense = () => {
         </div>
       ) : (
         <div>
-          <table border="1" style={{ width: "100%", textAlign: "left" }}>
+          <table style={{ width: "100%", textAlign: "left" }}>
             <thead>
               <tr>
                 <th>Sheet Name</th>
@@ -78,8 +79,10 @@ const ManageExpense = () => {
                   <td>{expense.type}</td>
                   <td>{new Date(expense.createdAt).toLocaleDateString()}</td>
                   <td>
-                    <NavLink to={`/expense/${expense._id}`}>
-                      <button>View</button>
+                    <NavLink to={`/getById-expense/${expense._id}`}>
+                      <button style={{ padding: "5px 15px", marginBottom: "5px" }}>
+                        View
+                      </button>
                     </NavLink>
                   </td>
                 </tr>

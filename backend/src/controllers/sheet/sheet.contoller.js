@@ -26,7 +26,7 @@ module.exports = {
             throw new ApiError('User ID not found in token.');
         }
         const sheets = await sheetService.getAllSheets(userId);
-        if (!sheets) {
+        if (!sheets[0]) {
             throw new ApiError(404, 'No sheets found.');
         }
 

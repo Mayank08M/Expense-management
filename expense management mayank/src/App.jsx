@@ -10,6 +10,7 @@ import Layout from "./components/Layout";
 import TrackExpenses from "./pages/TrackExpenses";
 import NewSheet from "./pages/NewSheet";
 import MonthlyReport from "./pages/MonthlyReport";
+import ExpenseDetail from "./components/ExpenseDetails";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
         {/* Routes with the Layout (SideBar included) */}
         <Route element={<Layout />}>
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/getById-expense/:_id" element={<ExpenseDetail />} />
           <Route path="/manage-expense" element={<ManageExpense />} />
           <Route path="/manage-income" element={<ManageIncome />} />
           <Route path="/track-expenses" element={<TrackExpenses />} />

@@ -27,7 +27,7 @@ const verifyCallback = async (req, resolve, reject, requiredRights) => {
 		resolve();
 	} catch (error) {
 		return reject(
-			new ApiError(httpStatus.FORBIDDEN, 'Please authenticate', error)
+			new ApiError(400, 'Please authenticate', error)
 		);
 	}
 };

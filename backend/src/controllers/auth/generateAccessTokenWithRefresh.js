@@ -9,7 +9,6 @@ const ApiError = require('../../utils/handlers/ApiError.handler');
 const ApiResponse = require('../../utils/handlers/ApiResponse.handler');
 const { AsyncHandler } = require('../../utils/handlers/Async.handler');
 const config = require('../../config/config');
-const httpStatus = require('http-status');
 const { tokenTypes } = require('../../config/tokens');
 
 function decodeToken(token) {
@@ -19,7 +18,7 @@ function decodeToken(token) {
 			resolve(payload);
 		} catch (error) {
 			return reject(
-				new ApiError(httpStatus.UNAUTHORIZED, 'Please authenticate', error)
+				new ApiError(400, 'Please authenticate', error)
 			);
 		}
 	});

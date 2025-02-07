@@ -40,7 +40,6 @@ const Login = () => {
           position: "top-center",
           autoClose: 1000, // Toast disappears after 3 seconds
         });
-        console.log("Login successful:", data);
 
         setTimeout(() => {
           navigate("/dashboard"); // Redirect to the dashboard on successful sign-up
