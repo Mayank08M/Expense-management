@@ -3,6 +3,8 @@ import { useParams } from "react-router-dom";
 import DataGrid from "react-data-grid";
 import "react-data-grid/lib/styles.css";
 import apiService from "../services/api.service";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const ExpenseDetail = () => {
   const { _id } = useParams();
@@ -15,8 +17,10 @@ const ExpenseDetail = () => {
 
   useEffect(() => {
     const fetchExpenseDetails = async () => {
+      
       try {
         const { data } = await apiService.getExpenseDetails(_id);
+        
         if (data.success && data.data.length > 0) {
           const sheet = data.data[0];
 
@@ -59,18 +63,36 @@ const ExpenseDetail = () => {
 
   const handleAddEntry = async () => {
     try {
-      // Send the object directly (newEntry) without converting it into an array
       const { data } = await apiService.addExpenseEntry(_id, newEntry);
-      
+
       if (data.success) {
-        setRows((prevRows) => [...prevRows, { id: prevRows.length + 1, ...newEntry }]);
+        setRows((prevRows) => [
+          ...prevRows,
+          { id: prevRows.length + 1, ...newEntry },
+        ]);
         setShowForm(false);
         setNewEntry({});
+        toast.success(data.message || "Entry added successfully!", {
+          position: "top-center",
+          autoClose: 1000, // Toast disappears after 2 seconds
+        });
       } else {
-        setError("Failed to add entry");
+        toast.error(data.message || "Failed to add entry", {
+          position: "top-center",
+          autoClose: 1000,
+        });
       }
     } catch (err) {
-      setError("Error adding entry");
+      // Extract error response from the backend properly
+      let errorMessage = "Error adding entry. Please try again.";
+
+      if (err.response && err.response.data && err.response.data.message) {
+        errorMessage = err.response.data.message; // ✅ Fetch backend error message
+      } else if (err.message) {
+        errorMessage = err.message; // Fallback to general error
+      }
+
+      toast.error(errorMessage, { position: "top-center", autoClose: 4000 });
     }
   };
 
@@ -89,7 +111,7 @@ const ExpenseDetail = () => {
 
       {showForm && (
         <div style={{ marginBottom: "20px" }}>
-          {columns.map((column) => (
+          {columns.map((column) =>
             column.name !== "Category" ? (
               <input
                 key={column.key}
@@ -114,12 +136,18 @@ const ExpenseDetail = () => {
                 <option value="Other">Other</option>
               </select>
             )
-          ))}
+          )}
           <button onClick={handleAddEntry}>Save Entry</button>
         </div>
       )}
 
-      <DataGrid columns={columns} rows={rows} defaultColumnOptions={{ resizable: true }} style={{ height: 400 }} />
+      <DataGrid
+        columns={columns}
+        rows={rows}
+        defaultColumnOptions={{ resizable: true }}
+        style={{ height: 400 }}
+      />
+      <ToastContainer />
     </div>
   );
 };

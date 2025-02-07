@@ -16,11 +16,11 @@ const validateCategory = (entry, sheetType) => {
 
     if (sheetType === "Expense") {
         if (!expenseCategories.includes(category)) {
-            throw new ApiError(400, `Invalid category. Valid categories are only Essentials, Investments, Entertainment, Other.`);
+            throw new ApiError(400, `Invalid category. Valid categories are only Essentials, Investments, Entertainment and Other.`);
         }
     } else if (sheetType === "Income") {
         if (!incomeCategories.includes(category)) {
-            throw new ApiError(400, `Invalid category. Valid categories are only Job, Side hustle, Investments, Other.`);
+            throw new ApiError(400, `Invalid category. Valid categories are only Job, Side hustle, Investments and Other.`);
         }
     } else {
         throw new ApiError(400, "Invalid sheet type.");
