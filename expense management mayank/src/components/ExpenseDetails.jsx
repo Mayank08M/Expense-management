@@ -120,8 +120,8 @@ const ExpenseDetail = () => {
   const handleDelete = async (entryId) => {
     if (window.confirm("Are you sure you want to delete this entry?")) {
       try {
-        await apiService.deleteExpenseEntry(_id, entryId);
-        setRows(rows.filter((row) => row.id !== entryId));
+        await apiService.deleteEntry(_id, entryId);
+        setRows((prevRows) => prevRows.filter((row) => row.entryId !== entryId));
         toast.success("Entry deleted successfully!", { autoClose: 1000 });
       } catch (err) {
         toast.error("Error deleting entry. Please try again.", { autoClose: 4000 });
@@ -210,7 +210,7 @@ const ExpenseDetail = () => {
                         background: "#f44336",
                         color: "white",
                       }}
-                      onClick={() => handleDelete(row.id)}
+                      onClick={() => handleDelete(row.entryId)}
                     >
                       Delete
                     </button>

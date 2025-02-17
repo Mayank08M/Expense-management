@@ -37,7 +37,7 @@ module.exports = {
             );
     }),
     updateEntry: AsyncHandler(async(req, res)=> {
-        const userId = req.user.userId; // Extract user ID from token
+        const userId = req.user.userId;
         const { _id } = req.params;
         const { entryId, data } = req.body;
         if (!userId) {
@@ -48,6 +48,20 @@ module.exports = {
             .status(201)
             .json(
                 new ApiResponse(201, {}, 'Entry updated successfully.')
+            );
+    }),
+    deleteEntry: AsyncHandler(async(req, res)=> {
+        const userId = req.user.userId;
+        const { _id } = req.params;
+        const { entryId } = req.body;
+        if (!userId) {
+            throw new ApiError('User ID not found in token.');
+        }
+        await sheetService.deleteEntry(userId, _id, entryId)
+        res
+            .status(201)
+            .json(
+                new ApiResponse(201, {}, 'Entry deleted successfully.')
             );
     })
 }

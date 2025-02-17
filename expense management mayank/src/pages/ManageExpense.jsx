@@ -13,26 +13,32 @@ const ManageExpense = () => {
 
   useEffect(() => {
     if (hasFetched.current) return;  // Prevent multiple API calls
-
+  
     const fetchExpenses = async () => {
       try {
         const response = await apiService.getAllExpenseSheets();
-        setData(response.data?.data || []);
+  
+        if (response.data?.data) {
+          setData(response.data.data);  // Store fetched data
+        } else {
+          setData([]); // If no sheets found, set data to an empty array
+        }
       } catch (err) {
         if (err?.response?.status === 400) {
           navigate("/login");  // Redirect to login if unauthorized
         } else {
-          setError("Failed to fetch data");
+          console.error("API Error:", err); // Log the error for debugging
+          setData([]); // Treat failed fetch as "no data" instead of an error
         }
       } finally {
         setLoading(false);
       }
     };
-
+  
     fetchExpenses();
     hasFetched.current = true;  // Mark that data has been fetched
-
-  }, [navigate]); // Only re-run if `navigate` changes
+  }, [navigate]);
+  
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;

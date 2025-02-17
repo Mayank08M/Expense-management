@@ -27,6 +27,13 @@ module.exports = {
             { $set: { "entries.$": data } } // Update the matched entry with new data
         );
     },
+    deleteEntry: async (userId, sheetId, entryId) => {
+        return await sheetModel.updateOne(
+            { _id: sheetId, userId: userId }, // Find the sheet by ID and userId
+            { $pull: { entries: { entryId: entryId } } } // Remove only the matching entry inside entries array
+        );
+    },
+
 
     getAllSheets: async (userId) => await sheetModel.find({ userId }).exec(),
 

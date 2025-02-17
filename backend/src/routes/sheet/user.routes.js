@@ -6,7 +6,8 @@ const userRoutes = express()
 userRoutes.use(auth())
 userRoutes.post('/new-sheet', sheetContoller.create)
 userRoutes.get('/getAll', sheetContoller.getAllSheets)
-userRoutes.patch('/:_id/updateEntry', sheetContoller.updateEntry)
+userRoutes.patch('/:_id/updateEntry', sheetContoller.updateEntry),
+userRoutes.delete('/delete/:_id', sheetContoller.deleteEntry),
 
 //expense
 userRoutes.get('/getAll-expense-sheets', expenseController.getAllSheets)
