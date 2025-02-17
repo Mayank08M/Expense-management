@@ -35,5 +35,19 @@ module.exports = {
             .json(
                 new ApiResponse(201, sheets, 'Sheet retrieved successfully.')
             );
+    }),
+    updateEntry: AsyncHandler(async(req, res)=> {
+        const userId = req.user.userId; // Extract user ID from token
+        const { _id } = req.params;
+        const { entryId, data } = req.body;
+        if (!userId) {
+            throw new ApiError('User ID not found in token.');
+        }
+        await sheetService.update(userId, _id, entryId, data)
+        res
+            .status(201)
+            .json(
+                new ApiResponse(201, {}, 'Entry updated successfully.')
+            );
     })
 }

@@ -11,6 +11,7 @@ import TrackExpenses from "./pages/TrackExpenses";
 import NewSheet from "./pages/NewSheet";
 import MonthlyReport from "./pages/MonthlyReport";
 import ExpenseDetail from "./components/ExpenseDetails";
+import IncomeDetail from "./components/IncomeDetail";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
         <Route element={<Layout />}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/getById-expense/:_id" element={<ExpenseDetail />} />
+          <Route path="/getById-income/:_id" element={<IncomeDetail />} />
           <Route path="/manage-expense" element={<ManageExpense />} />
           <Route path="/manage-income" element={<ManageIncome />} />
           <Route path="/track-expenses" element={<TrackExpenses />} />

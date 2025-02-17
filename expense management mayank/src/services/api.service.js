@@ -34,9 +34,16 @@ api.interceptors.response.use(
 
 // API Methods
 const apiService = {
+
+  updateEntry: (_id, data) => api.patch(`/api/sheet/${_id}/updateEntry`, data),
+  //expenseRoutes
   getAllExpenseSheets: () => api.get("/api/sheet/getAll-expense-sheets"),
   getExpenseDetails: (_id) => api.get(`/api/sheet/getById-expense/${_id}`),
   addExpenseEntry: (_id, data) => api.patch(`/api/sheet/create-entry/${_id}`, data),
+  //incomeRoutes
+  getAllIncomeSheets: () => api.get("/api/sheet/getAll-income-sheets"),
+  getIncomeDetails: (_id) => api.get(`/api/sheet/getById-income/${_id}`),
+  addIncomeEntry: (_id, data) => api.patch(`/api/sheet/create-income-sheet-entry/${_id}`, data),
 };
 
 export default apiService;

@@ -14,26 +14,26 @@ const ExpenseDetail = () => {
   const [error, setError] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [newEntry, setNewEntry] = useState({});
+  const [editIndex, setEditIndex] = useState(null);
+  const [editEntry, setEditEntry] = useState({});
 
   useEffect(() => {
     const fetchExpenseDetails = async () => {
-      
       try {
         const { data } = await apiService.getExpenseDetails(_id);
-        
+
         if (data.success && data.data.length > 0) {
           const sheet = data.data[0];
 
-          // Dynamically setting columns
-          setColumns(
-            sheet.columns.map((column) => ({
-              key: column.toLowerCase().replace(/\s+/g, ""), // Cleaned key for use in input names
+          setColumns([
+            ...sheet.columns.map((column) => ({
+              key: column.toLowerCase().replace(/\s+/g, ""),
               name: column,
               editable: true,
-            }))
-          );
+            })),
+            { key: "actions", name: "Actions", editable: false },
+          ]);
 
-          // Setting rows with dynamic columns
           setRows(
             sheet.entries.map((entry, index) => ({
               id: index + 1,
@@ -72,27 +72,60 @@ const ExpenseDetail = () => {
         ]);
         setShowForm(false);
         setNewEntry({});
-        toast.success(data.message || "Entry added successfully!", {
-          position: "top-center",
-          autoClose: 1000, // Toast disappears after 2 seconds
-        });
+        toast.success("Entry added successfully!", { autoClose: 1000 });
       } else {
-        toast.error(data.message || "Failed to add entry", {
-          position: "top-center",
-          autoClose: 1000,
-        });
+        toast.error("Failed to add entry", { autoClose: 1000 });
       }
     } catch (err) {
-      // Extract error response from the backend properly
-      let errorMessage = "Error adding entry. Please try again.";
+      toast.error("Error adding entry. Please try again.", { autoClose: 4000 });
+    }
+  };
 
-      if (err.response && err.response.data && err.response.data.message) {
-        errorMessage = err.response.data.message; // ✅ Fetch backend error message
-      } else if (err.message) {
-        errorMessage = err.message; // Fallback to general error
+  const handleEditClick = (index) => {
+    setEditIndex(index);
+    setEditEntry({ ...rows[index] });
+  };
+
+  const handleEditChange = (e) => {
+    const { name, value } = e.target;
+    setEditEntry((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSaveEdit = async () => {
+    if (editIndex === null) return;
+  
+    try {
+      const payload = { entryId: editEntry.entryId, data: editEntry }; // Ensure correct format
+      const { data } = await apiService.updateEntry(_id, payload);
+  
+      if (data.success) {
+        setRows((prevRows) => {
+          const updatedRows = [...prevRows];
+          updatedRows[editIndex] = editEntry;
+          return updatedRows;
+        });
+  
+        setEditIndex(null);
+        setEditEntry({});
+        toast.success("Entry updated successfully!", { autoClose: 1000 });
+      } else {
+        toast.error("Failed to update entry", { autoClose: 1000 });
       }
+    } catch (err) {
+      toast.error("Error updating entry. Please try again.", { autoClose: 4000 });
+    }
+  };
+  
 
-      toast.error(errorMessage, { position: "top-center", autoClose: 4000 });
+  const handleDelete = async (entryId) => {
+    if (window.confirm("Are you sure you want to delete this entry?")) {
+      try {
+        await apiService.deleteExpenseEntry(_id, entryId);
+        setRows(rows.filter((row) => row.id !== entryId));
+        toast.success("Entry deleted successfully!", { autoClose: 1000 });
+      } catch (err) {
+        toast.error("Error deleting entry. Please try again.", { autoClose: 4000 });
+      }
     }
   };
 
@@ -102,17 +135,17 @@ const ExpenseDetail = () => {
   if (error) return <p>{error}</p>;
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h2>Expense Sheet</h2>
+    <div style={{ padding: "10px" }}>
+      <h2 style={{ margin: "10px 0" }}>Expense Sheet</h2>
 
-      <button onClick={toggleForm} style={{ marginBottom: "20px" }}>
+      <button onClick={toggleForm} style={{ marginBottom: "10px" }}>
         {showForm ? "Cancel" : "Add Entry"}
       </button>
 
       {showForm && (
         <div style={{ marginBottom: "20px" }}>
           {columns.map((column) =>
-            column.name !== "Category" ? (
+            column.key !== "actions" ? (
               <input
                 key={column.key}
                 type="text"
@@ -122,28 +155,91 @@ const ExpenseDetail = () => {
                 onChange={handleInputChange}
                 style={{ marginRight: "10px" }}
               />
-            ) : (
-              <select
-                key={column.key}
-                name={column.key}
-                value={newEntry[column.key] || ""}
-                onChange={handleInputChange}
-                style={{ marginRight: "10px" }}
-              >
-                <option value="Essentials">Essentials</option>
-                <option value="Investments">Investments</option>
-                <option value="Entertainment">Entertainment</option>
-                <option value="Other">Other</option>
-              </select>
-            )
+            ) : null
           )}
           <button onClick={handleAddEntry}>Save Entry</button>
         </div>
       )}
 
       <DataGrid
-        columns={columns}
-        rows={rows}
+        columns={[
+          ...columns.filter((col) => col.key !== "actions"),
+          {
+            key: "actions",
+            name: "Actions",
+            renderCell: ({ row }) => (
+              <div style={{ display: "flex", gap: "10px" }}>
+                {editIndex === row.id - 1 ? (
+                  <>
+                    <button
+                      style={{
+                        padding: "5px 10px",
+                        background: "#4CAF50",
+                        color: "white",
+                      }}
+                      onClick={handleSaveEdit}
+                    >
+                      Save
+                    </button>
+                    <button
+                      style={{
+                        padding: "5px 10px",
+                        background: "#f44336",
+                        color: "white",
+                      }}
+                      onClick={() => setEditIndex(null)}
+                    >
+                      Cancel
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      style={{
+                        padding: "5px 10px",
+                        background: "#ff9800",
+                        color: "white",
+                      }}
+                      onClick={() => handleEditClick(row.id - 1)}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      style={{
+                        padding: "5px 10px",
+                        background: "#f44336",
+                        color: "white",
+                      }}
+                      onClick={() => handleDelete(row.id)}
+                    >
+                      Delete
+                    </button>
+                  </>
+                )}
+              </div>
+            ),
+          },
+        ]}
+        rows={rows.map((row, index) =>
+          editIndex === index
+            ? {
+                ...row,
+                ...Object.fromEntries(
+                  columns
+                    .filter((col) => col.editable)
+                    .map((col) => [
+                      col.key,
+                      <input
+                        type="text"
+                        name={col.key}
+                        value={editEntry[col.key] || ""}
+                        onChange={handleEditChange}
+                      />,
+                    ])
+                ),
+              }
+            : row
+        )}
         defaultColumnOptions={{ resizable: true }}
         style={{ height: 400 }}
       />

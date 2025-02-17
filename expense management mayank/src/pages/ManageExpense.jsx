@@ -1,33 +1,38 @@
-import React, { useEffect, useState } from "react";
-import { NavLink } from "react-router-dom";
+import React, { useEffect, useState, useRef } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
 import nolist from "../assets/images/nolist.png";
-import apiService from "../services/api.service"; // Import API service
+import apiService from "../services/api.service";
 
 const ManageExpense = () => {
+  const navigate = useNavigate();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  const hasFetched = useRef(false);  // Use a ref to check if data is fetched
 
   useEffect(() => {
-    let isMounted = true; // To prevent state updates after unmounting
+    if (hasFetched.current) return;  // Prevent multiple API calls
 
     const fetchExpenses = async () => {
       try {
         const response = await apiService.getAllExpenseSheets();
-        if (isMounted) setData(response.data?.data || []);
+        setData(response.data?.data || []);
       } catch (err) {
-        if (isMounted) setError("Failed to fetch data");
+        if (err?.response?.status === 400) {
+          navigate("/login");  // Redirect to login if unauthorized
+        } else {
+          setError("Failed to fetch data");
+        }
       } finally {
-        if (isMounted) setLoading(false);
+        setLoading(false);
       }
     };
 
     fetchExpenses();
+    hasFetched.current = true;  // Mark that data has been fetched
 
-    return () => {
-      isMounted = false; // Cleanup function to prevent memory leaks
-    };
-  }, []);
+  }, [navigate]); // Only re-run if `navigate` changes
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;

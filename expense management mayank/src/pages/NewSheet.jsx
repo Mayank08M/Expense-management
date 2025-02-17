@@ -31,8 +31,8 @@ const NewSheet = () => {
       return;
     }
 
-    if (!columns.includes("category")) {
-      setMessage("Columns must include 'category'.");
+    if (!columns.includes("Category")) {
+      setMessage("Columns must include 'Category'.");
       return;
     }
 

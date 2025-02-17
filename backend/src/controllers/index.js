@@ -1,6 +1,11 @@
 module.exports = {
     //auth
     userAuthController: require('./auth/userAuth.controller'),
+    //sheet
     sheetContoller: require('./sheet/sheet.contoller'),
-    expenseController: require('./expense/expense.contoller')
+    //expense
+    expenseController: require('./expense/expense.contoller'),
+    //income
+    incomeController: require('./income/income.controller')
+
 }
