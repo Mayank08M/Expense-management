@@ -22,6 +22,7 @@
 
 .getstarted:hover {
   background-color: #005bb5; /* Darker shade on hover */
+  color: #fff;
 }
 .highlight {
     color: #1976d2;
@@ -32,6 +33,7 @@
 }
 .faq {
   margin-top: 40px;
+  width: 50%;
 }
 
 .faqItem {
@@ -44,9 +46,9 @@
   justify-content: space-between;
   align-items: center;
   padding: 10px;
-  background-color: #f1f1f1;
+  background-color: #fff;
   border-radius: 5px;
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: bold;
   transition: background-color 0.3s ease;
 }
@@ -58,7 +60,7 @@
 .dropdownIcon {
   display: flex;
   justify-content: center;
-  align-items: center;
+  text-align: left;
 }
 
 .answer {
@@ -69,4 +71,5 @@
   margin-top: 10px;
   font-size: 1rem;
   color: #555;
+  text-align: left;
 }
