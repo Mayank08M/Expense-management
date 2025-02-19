@@ -8,7 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { FaRegEdit } from "react-icons/fa";
 import { MdOutlineDelete } from "react-icons/md";
 import { FaRegSave } from "react-icons/fa";
-import { MdOutlineCancel } from "react-icons/md";
+import { MdOutlineCancel, MdDelete } from "react-icons/md";
 
 const IncomeDetail = () => {
   const { _id } = useParams();
@@ -69,11 +69,11 @@ const IncomeDetail = () => {
   const handleAddEntry = async () => {
     try {
       const { data } = await apiService.addIncomeEntry(_id, newEntry);
-  
+
       if (data.success) {
         setRows((prevRows) => [
           ...prevRows,
-          { entryId: data.data.entryId, ...newEntry }, // Use correct entryId from backend
+          { id: prevRows.length + 1, entryId: data.data.entryId, ...newEntry }, // Use correct entryId from backend
         ]);
         setShowForm(false);
         setNewEntry({});
@@ -88,7 +88,6 @@ const IncomeDetail = () => {
       toast.error(errorMessage, { position: "top-center", autoClose: 5000 });
     }
   };
-  
 
   const handleEditClick = (index) => {
     setEditIndex(index);
@@ -134,7 +133,7 @@ const IncomeDetail = () => {
   const handleDelete = async (entryId) => {
     if (window.confirm("Are you sure you want to delete this entry?")) {
       try {
-        console.log(entryId)
+        console.log(entryId);
         await apiService.deleteEntry(_id, entryId);
         setRows((prevRows) =>
           prevRows.filter((row) => row.entryId !== entryId)
@@ -142,9 +141,29 @@ const IncomeDetail = () => {
         toast.success("Entry deleted successfully!", { autoClose: 1000 });
       } catch (err) {
         const errorMessage =
-        err.response?.data?.message ||
-        "Error updating entry. Please try again.";
+          err.response?.data?.message ||
+          "Error updating entry. Please try again.";
         toast.error(errorMessage, {
+          position: "top-center",
+          autoClose: 4000,
+        });
+      }
+    }
+  };
+
+  const handleDeleteAll = async () => {
+    if (rows.length === 0) {
+      toast.info("No entries to delete", { autoClose: 1000 });
+      return;
+    }
+
+    if (window.confirm("Are you sure you want to delete all entries?")) {
+      try {
+        await apiService.deletAllEntries(_id);
+        setRows([]);
+        toast.success("All entries deleted successfully!", { autoClose: 1000 });
+      } catch (err) {
+        toast.error("Error deleting all entries. Please try again.", {
           position: "top-center",
           autoClose: 4000,
         });
@@ -158,7 +177,7 @@ const IncomeDetail = () => {
   if (error) return <p>{error}</p>;
 
   return (
-    <div style={{ padding: "10px" }}>
+    <div style={{ padding: "5px" }}>
       <h2 style={{ margin: "10px 0" }}>{sheetName}</h2>
 
       <button onClick={toggleForm} style={{ marginBottom: "10px" }}>
@@ -274,6 +293,18 @@ const IncomeDetail = () => {
         defaultColumnOptions={{ resizable: true }}
         style={{ height: 400 }}
       />
+
+      <button
+        onClick={handleDeleteAll}
+        style={{
+          marginTop: "5px",
+          padding: "8px",
+          background: "red",
+          color: "white",
+        }}
+      >
+        <MdDelete style={{ marginRight: "5px" }} /> Delete All
+      </button>
       <ToastContainer />
     </div>
   );

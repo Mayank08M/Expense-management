@@ -8,7 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { FaRegEdit } from "react-icons/fa";
 import { MdOutlineDelete } from "react-icons/md";
 import { FaRegSave } from "react-icons/fa";
-import { MdOutlineCancel } from "react-icons/md";
+import { MdOutlineCancel, MdDelete } from "react-icons/md";
 
 const ExpenseDetail = () => {
   const { _id } = useParams();
@@ -41,7 +41,7 @@ const ExpenseDetail = () => {
 
           setRows(
             sheet.entries.map((entry, index) => ({
-              id: index + 1,
+              id: index + 1, // Ensure unique and consistent id
               ...entry,
             }))
           );
@@ -73,7 +73,7 @@ const ExpenseDetail = () => {
       if (data.success) {
         setRows((prevRows) => [
           ...prevRows,
-          { entryId: data.data.entryId, ...newEntry }, // Use correct entryId from backend
+          { id: prevRows.length + 1, entryId: data.data.entryId, ...newEntry }, // Ensure unique id
         ]);
         setShowForm(false);
         setNewEntry({});
@@ -147,13 +147,33 @@ const ExpenseDetail = () => {
     }
   };
 
+  const handleDeleteAll = async () => {
+    if (rows.length === 0) {
+      toast.info("No entries to delete", { autoClose: 1000 });
+      return;
+    }
+
+    if (window.confirm("Are you sure you want to delete all entries?")) {
+      try {
+        await apiService.deletAllEntries(_id);
+        setRows([]);
+        toast.success("All entries deleted successfully!", { autoClose: 1000 });
+      } catch (err) {
+        toast.error("Error deleting all entries. Please try again.", {
+          position: "top-center",
+          autoClose: 4000,
+        });
+      }
+    }
+  };
+
   const toggleForm = () => setShowForm(!showForm);
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
 
   return (
-    <div style={{ padding: "10px" }}>
+    <div style={{ padding: "5px" }}>
       <h2 style={{ margin: "10px 0" }}>{sheetName}</h2>
 
       <button onClick={toggleForm} style={{ marginBottom: "10px" }}>
@@ -269,6 +289,19 @@ const ExpenseDetail = () => {
         defaultColumnOptions={{ resizable: true }}
         style={{ height: 400 }}
       />
+
+      <button
+        onClick={handleDeleteAll}
+        style={{
+          marginTop: "5px",
+          padding: "8px",
+          background: "red",
+          color: "white",
+        }}
+      >
+        <MdDelete style={{ marginRight: "5px" }} /> Delete All
+      </button>
+
       <ToastContainer />
     </div>
   );
