@@ -2,6 +2,7 @@ const { sheetService } = require("../../services");
 const ApiError = require("../../utils/handlers/ApiError.handler");
 const ApiResponse = require("../../utils/handlers/ApiResponse.handler");
 const { AsyncHandler } = require("../../utils/handlers/Async.handler");
+const { v4: uuidv4 } = require('uuid');
 
 const expenseCategories = ["Essentials", "Investments", "Entertainment", "Other"];
 const incomeCategories = ["Job", "Side hustle", "Investments", "Other"];
@@ -81,9 +82,13 @@ module.exports = {
             throw new ApiError(400, err.message);
         }
 
-        await sheetService.createSheetEntry(req.body, userId, _id);
+        const entryId = uuidv4();
 
-        res.status(201).json(new ApiResponse(201, {}, 'Entry created successfully.'));
+        const entryData = { ...req.body, entryId };
+
+        const result = await sheetService.createSheetEntry(entryData, userId, _id);
+
+        res.status(201).json(new ApiResponse(201, result, 'Entry created successfully.'));
     }),
 
 };

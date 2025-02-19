@@ -5,6 +5,10 @@ import "react-data-grid/lib/styles.css";
 import apiService from "../services/api.service";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { FaRegEdit } from "react-icons/fa";
+import { MdOutlineDelete } from "react-icons/md";
+import { FaRegSave } from "react-icons/fa";
+import { MdOutlineCancel } from "react-icons/md";
 
 const ExpenseDetail = () => {
   const { _id } = useParams();
@@ -16,6 +20,7 @@ const ExpenseDetail = () => {
   const [newEntry, setNewEntry] = useState({});
   const [editIndex, setEditIndex] = useState(null);
   const [editEntry, setEditEntry] = useState({});
+  const [sheetName, setSheetName] = useState("");
 
   useEffect(() => {
     const fetchExpenseDetails = async () => {
@@ -24,7 +29,7 @@ const ExpenseDetail = () => {
 
         if (data.success && data.data.length > 0) {
           const sheet = data.data[0];
-
+          setSheetName(sheet.name || "Expense Sheet");
           setColumns([
             ...sheet.columns.map((column) => ({
               key: column.toLowerCase().replace(/\s+/g, ""),
@@ -68,16 +73,19 @@ const ExpenseDetail = () => {
       if (data.success) {
         setRows((prevRows) => [
           ...prevRows,
-          { id: prevRows.length + 1, ...newEntry },
+          { entryId: data.data.entryId, ...newEntry }, // Use correct entryId from backend
         ]);
         setShowForm(false);
         setNewEntry({});
         toast.success("Entry added successfully!", { autoClose: 1000 });
       } else {
-        toast.error("Failed to add entry", { autoClose: 1000 });
+        toast.error(data.message || "Failed to add entry", { autoClose: 1000 });
       }
     } catch (err) {
-      toast.error("Error adding entry. Please try again.", { autoClose: 4000 });
+      console.error("Error adding entry:", err);
+      const errorMessage =
+        err.response?.data?.message || "Error adding entry. Please try again.";
+      toast.error(errorMessage, { position: "top-center", autoClose: 5000 });
     }
   };
 
@@ -93,18 +101,18 @@ const ExpenseDetail = () => {
 
   const handleSaveEdit = async () => {
     if (editIndex === null) return;
-  
+
     try {
       const payload = { entryId: editEntry.entryId, data: editEntry }; // Ensure correct format
       const { data } = await apiService.updateEntry(_id, payload);
-  
+
       if (data.success) {
         setRows((prevRows) => {
           const updatedRows = [...prevRows];
           updatedRows[editIndex] = editEntry;
           return updatedRows;
         });
-  
+
         setEditIndex(null);
         setEditEntry({});
         toast.success("Entry updated successfully!", { autoClose: 1000 });
@@ -112,19 +120,29 @@ const ExpenseDetail = () => {
         toast.error("Failed to update entry", { autoClose: 1000 });
       }
     } catch (err) {
-      toast.error("Error updating entry. Please try again.", { autoClose: 4000 });
+      const errorMessage =
+        err.response?.data?.message ||
+        "Error updating entry. Please try again.";
+      toast.error(errorMessage, {
+        position: "top-center",
+        autoClose: 4000,
+      });
     }
   };
-  
 
   const handleDelete = async (entryId) => {
     if (window.confirm("Are you sure you want to delete this entry?")) {
       try {
         await apiService.deleteEntry(_id, entryId);
-        setRows((prevRows) => prevRows.filter((row) => row.entryId !== entryId));
+        setRows((prevRows) =>
+          prevRows.filter((row) => row.entryId !== entryId)
+        );
         toast.success("Entry deleted successfully!", { autoClose: 1000 });
       } catch (err) {
-        toast.error("Error deleting entry. Please try again.", { autoClose: 4000 });
+        toast.error("Error deleting entry. Please try again.", {
+          position: "top-center",
+          autoClose: 4000,
+        });
       }
     }
   };
@@ -136,7 +154,7 @@ const ExpenseDetail = () => {
 
   return (
     <div style={{ padding: "10px" }}>
-      <h2 style={{ margin: "10px 0" }}>Expense Sheet</h2>
+      <h2 style={{ margin: "10px 0" }}>{sheetName}</h2>
 
       <button onClick={toggleForm} style={{ marginBottom: "10px" }}>
         {showForm ? "Cancel" : "Add Entry"}
@@ -168,51 +186,59 @@ const ExpenseDetail = () => {
             key: "actions",
             name: "Actions",
             renderCell: ({ row }) => (
-              <div style={{ display: "flex", gap: "10px" }}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
                 {editIndex === row.id - 1 ? (
                   <>
                     <button
                       style={{
-                        padding: "5px 10px",
+                        padding: "2px 4px",
                         background: "#4CAF50",
                         color: "white",
                       }}
                       onClick={handleSaveEdit}
                     >
-                      Save
+                      <FaRegSave />
                     </button>
                     <button
                       style={{
-                        padding: "5px 10px",
+                        padding: "2px 4px",
                         background: "#f44336",
                         color: "white",
+                        marginLeft: "10px",
                       }}
                       onClick={() => setEditIndex(null)}
                     >
-                      Cancel
+                      <MdOutlineCancel />
                     </button>
                   </>
                 ) : (
                   <>
                     <button
                       style={{
-                        padding: "5px 10px",
+                        padding: "2px 4px",
                         background: "#ff9800",
                         color: "white",
                       }}
                       onClick={() => handleEditClick(row.id - 1)}
                     >
-                      Edit
+                      <FaRegEdit />
                     </button>
                     <button
                       style={{
-                        padding: "5px 10px",
+                        padding: "2px 4px",
                         background: "#f44336",
                         color: "white",
+                        marginLeft: "10px",
                       }}
                       onClick={() => handleDelete(row.entryId)}
                     >
-                      Delete
+                      <MdOutlineDelete />
                     </button>
                   </>
                 )}

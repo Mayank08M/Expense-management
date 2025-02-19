@@ -8,6 +8,8 @@ userRoutes.post('/new-sheet', sheetContoller.create)
 userRoutes.get('/getAll', sheetContoller.getAllSheets)
 userRoutes.patch('/:_id/updateEntry', sheetContoller.updateEntry),
 userRoutes.delete('/delete/:_id', sheetContoller.deleteEntry),
+userRoutes.delete('/deleteSheet/:_id', sheetContoller.deleteSheet),
+userRoutes.patch('/deleteAllEntries/:_id', sheetContoller.deletAllEntries),
 
 //expense
 userRoutes.get('/getAll-expense-sheets', expenseController.getAllSheets)

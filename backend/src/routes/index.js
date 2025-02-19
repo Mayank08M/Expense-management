@@ -11,6 +11,10 @@ const defaultRoutes = [
 		path: '/sheet',
 		route: require('./sheet'),
 	},
+	{
+		path: '/dashboard',
+		route: require('./dashboard'),
+	},
 ];
 
 defaultRoutes.forEach((route) => {

@@ -86,9 +86,9 @@ module.exports = {
 
         const entryData = { ...req.body, entryId };
 
-        await sheetService.createSheetEntry(entryData, userId, _id);
+        const result = await sheetService.createSheetEntry(entryData, userId, _id);
 
-        res.status(201).json(new ApiResponse(201, {}, 'Entry created successfully.'));
+        res.status(201).json(new ApiResponse(201, result, 'Entry created successfully.'));
     }),
 
 };

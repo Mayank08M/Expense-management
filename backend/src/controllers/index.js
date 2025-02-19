@@ -6,6 +6,8 @@ module.exports = {
     //expense
     expenseController: require('./expense/expense.contoller'),
     //income
-    incomeController: require('./income/income.controller')
+    incomeController: require('./income/income.controller'),
+    //dashboard
+    dashboardController: require('./dashboard/dashboard.contoller')
 
 }

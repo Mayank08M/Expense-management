@@ -35,8 +35,11 @@ api.interceptors.response.use(
 // API Methods
 const apiService = {
 
+  getExpenseCategoryPercentage: () => api.get("/api/dashboard/getAllExpense"),
+
   updateEntry: (_id, data) => api.patch(`/api/sheet/${_id}/updateEntry`, data),
-  deleteEntry: (_id, entryId)=> api.delete(`api/sheet/delete/${_id}`, { data: { entryId } }),
+  deleteEntry: (_id, entryId) => api.delete(`api/sheet/delete/${_id}`, { data: { entryId } }),
+  deletAllEntries: (_id) => api.patch(`/api/sheet/deleteAllEntries/${_id}`),
   //expenseRoutes
   getAllExpenseSheets: () => api.get("/api/sheet/getAll-expense-sheets"),
   getExpenseDetails: (_id) => api.get(`/api/sheet/getById-expense/${_id}`),

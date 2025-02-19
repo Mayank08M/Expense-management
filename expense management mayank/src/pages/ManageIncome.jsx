@@ -1,36 +1,44 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import nolist from "../assets/images/nolist.png";
-import apiService from "../services/api.service"; // Import API service
+import apiService from "../services/api.service";
 
 const ManageIncome = () => {
   const navigate = useNavigate();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  const hasFetched = useRef(false);  // Use a ref to check if data is fetched
 
   useEffect(() => {
-    let isMounted = true; // To prevent state updates after unmounting
-
-    const fetchIncomes = async () => {
+    if (hasFetched.current) return;  // Prevent multiple API calls
+  
+    const fetchIncome = async () => {
       try {
         const response = await apiService.getAllIncomeSheets();
-        if (isMounted) setData(response.data?.data || []);
+  
+        if (response.data?.data) {
+          setData(response.data.data);  // Store fetched data
+        } else {
+          setData([]); // If no sheets found, set data to an empty array
+        }
       } catch (err) {
-        if (err?.status === 400) {
-          navigate("/login");
-        } else if (isMounted) setError("Failed to fetch data");
+        if (err?.response?.status === 400) {
+          navigate("/login");  // Redirect to login if unauthorized
+        } else {
+          console.error("API Error:", err); // Log the error for debugging
+          setData([]); // Treat failed fetch as "no data" instead of an error
+        }
       } finally {
-        if (isMounted) setLoading(false);
+        setLoading(false);
       }
     };
-
-    fetchIncomes();
-
-    return () => {
-      isMounted = false; // Cleanup function to prevent memory leaks
-    };
-  }, []);
+  
+    fetchIncome();
+    hasFetched.current = true;  // Mark that data has been fetched
+  }, [navigate]);
+  
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
@@ -83,9 +91,7 @@ const ManageIncome = () => {
                   <td>{new Date(income.createdAt).toLocaleDateString()}</td>
                   <td>
                     <NavLink to={`/getById-income/${income._id}`}>
-                      <button
-                        style={{ padding: "5px 15px", marginBottom: "5px" }}
-                      >
+                      <button style={{ padding: "5px 15px", marginBottom: "5px" }}>
                         View
                       </button>
                     </NavLink>
