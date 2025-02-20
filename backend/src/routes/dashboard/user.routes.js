@@ -5,6 +5,7 @@ const userRoutes = express()
 
 userRoutes.use(auth())
 
-userRoutes.get('/getAllExpense', dashboardController.getCategoryWiseExpenseData)
+userRoutes.get('/getAllExpense', dashboardController.getCategoryWiseExpenseData),
+userRoutes.get('/getAllIncome', dashboardController.getCategoryWiseIncomeData),
 
 module.exports = userRoutes;

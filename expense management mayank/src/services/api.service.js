@@ -36,6 +36,7 @@ api.interceptors.response.use(
 const apiService = {
 
   getExpenseCategoryPercentage: () => api.get("/api/dashboard/getAllExpense"),
+  getIncomeCategoryPercentage: () => api.get("/api/dashboard/getAllIncome"),
 
   updateEntry: (_id, data) => api.patch(`/api/sheet/${_id}/updateEntry`, data),
   deleteEntry: (_id, entryId) => api.delete(`api/sheet/delete/${_id}`, { data: { entryId } }),

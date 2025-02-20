@@ -10,10 +10,18 @@ module.exports = {
         if (!userId) {
             throw new ApiError('User not found.');
         }
-        const sheetData = req.body;
+        const { name, type, columns, entries } = req.body;
+
+        if (!columns.includes("Category")) {
+            throw new ApiError(400, "Columns must include 'Category'.");
+        }
+
+        if (columns.length < 1 || columns.length > 10) {
+            throw new ApiError(400, "Number of columns must be between 1 and 10.");
+        }
 
         // Call the service function to create the sheet
-        await sheetService.create(sheetData, userId);
+        await sheetService.create({ name, type, columns, entries }, userId);
         res
             .status(201)
             .json(
