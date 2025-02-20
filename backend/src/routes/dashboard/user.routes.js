@@ -7,5 +7,6 @@ userRoutes.use(auth())
 
 userRoutes.get('/getAllExpense', dashboardController.getCategoryWiseExpenseData),
 userRoutes.get('/getAllIncome', dashboardController.getCategoryWiseIncomeData),
+userRoutes.get('/getLastFiveMonthsData', dashboardController.getLastFiveMonthData),
 
 module.exports = userRoutes;

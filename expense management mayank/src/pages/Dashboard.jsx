@@ -9,9 +9,16 @@ const Dashboard = () => {
   const [incomeCategories, setIncomeCategories] = useState([]);
   const expenseApiCalled = useRef(false); // ✅ Separate API call flag for expenses
   const incomeApiCalled = useRef(false);
+  const chartApiCalled = useRef(false);
 
   // Predefined colors for categories
-  const categoryColors = ["#FF5733", "#33FF57", "#3357FF", "#FF33A1", "#FFD700"];
+  const categoryColors = [
+    "#FF5733",
+    "#33FF57",
+    "#3357FF",
+    "#FF33A1",
+    "#FFD700",
+  ];
 
   useEffect(() => {
     const fetchExpenseCategories = async () => {
@@ -22,7 +29,9 @@ const Dashboard = () => {
         const response = await apiService.getExpenseCategoryPercentage();
         console.log("Fetched expense categories:", response.data);
 
-        const data = Array.isArray(response.data.data) ? response.data.data : [];
+        const data = Array.isArray(response.data.data)
+          ? response.data.data
+          : [];
         const coloredData = data.map((item, index) => ({
           ...item,
           color: categoryColors[index % categoryColors.length],
@@ -47,7 +56,9 @@ const Dashboard = () => {
         const response = await apiService.getIncomeCategoryPercentage();
         console.log("Fetched income categories:", response.data);
 
-        const data = Array.isArray(response.data.data) ? response.data.data : [];
+        const data = Array.isArray(response.data.data)
+          ? response.data.data
+          : [];
         const coloredData = data.map((item, index) => ({
           ...item,
           color: categoryColors[index % categoryColors.length],
@@ -63,30 +74,78 @@ const Dashboard = () => {
     fetchIncomeCategories();
   }, []);
 
+  useEffect(() => {
+    const fetchChartData = async () => {
+      if (chartApiCalled.current) return; // Prevent duplicate API call
+      chartApiCalled.current = true;
+      try {
+        const response = await apiService.getFiveMonthsData();
+
+        if (response.data && response.data.data) {
+          // Month mapping for labels
+          const monthNames = [
+            "January",
+            "February",
+            "March",
+            "April",
+            "May",
+            "June",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December",
+          ];
+
+          // Process the API response
+          const formattedData = response.data.data.map((item) => ({
+            label: `${monthNames[item._id.month - 1]} ${item._id.year}`, // Convert month number to name
+            income: item.totalIncome || 0,
+            expense: item.totalExpense || 0,
+          }));
+
+          // Extract labels, income, and expenses
+          const labels = formattedData.map((item) => item.label);
+          const income = formattedData.map((item) => item.income);
+          const expenses = formattedData.map((item) => item.expense);
+
+          // Prepare chart data
+          const data = {
+            labels,
+            datasets: [
+              {
+                label: "Income",
+                backgroundColor: "#007bff",
+                borderColor: "#007bff",
+                data: income,
+              },
+              {
+                label: "Expenses",
+                backgroundColor: "#ff0000",
+                borderColor: "#ff0000",
+                data: expenses,
+              },
+            ],
+          };
+
+          setChartData(data);
+        }
+      } catch (error) {
+        console.error("Error fetching chart data:", error);
+      }
+    };
+
+    fetchChartData();
+  }, []);
 
   useEffect(() => {
     const documentStyle = getComputedStyle(document.documentElement);
     const textColor = documentStyle.getPropertyValue("--text-color");
-    const textColorSecondary = documentStyle.getPropertyValue("--text-color-secondary");
+    const textColorSecondary = documentStyle.getPropertyValue(
+      "--text-color-secondary"
+    );
     const surfaceBorder = documentStyle.getPropertyValue("--surface-border");
-
-    const data = {
-      labels: ["January", "February", "March", "April", "May"],
-      datasets: [
-        {
-          label: "Income",
-          backgroundColor: "#007bff",
-          borderColor: "#007bff",
-          data: [65, 59, 80, 81, 50],
-        },
-        {
-          label: "Expenses",
-          backgroundColor: "#ff0000",
-          borderColor: "#ff0000",
-          data: [28, 48, 40, 19, 40],
-        },
-      ],
-    };
 
     const options = {
       maintainAspectRatio: false,
@@ -94,7 +153,7 @@ const Dashboard = () => {
       plugins: {
         legend: {
           labels: {
-            fontColor: textColor,
+            color: textColor,
           },
         },
       },
@@ -102,28 +161,17 @@ const Dashboard = () => {
         x: {
           ticks: {
             color: textColorSecondary,
-            font: {
-              weight: 500,
-            },
+            font: { weight: 500 },
           },
-          grid: {
-            display: false,
-            drawBorder: false,
-          },
+          grid: { display: false, drawBorder: false },
         },
         y: {
-          ticks: {
-            color: textColorSecondary,
-          },
-          grid: {
-            color: surfaceBorder,
-            drawBorder: false,
-          },
+          ticks: { color: textColorSecondary },
+          grid: { color: surfaceBorder, drawBorder: false },
         },
       },
     };
 
-    setChartData(data);
     setChartOptions(options);
   }, []);
 
@@ -140,9 +188,9 @@ const Dashboard = () => {
         Welcome to Dashboard
       </div>
       <Chart type="bar" data={chartData} options={chartOptions} />
-  
+
       <h3>Category Wise Expense Meter</h3>
-  
+
       {expenseCategories.length > 0 ? (
         <div
           className="meter-group-container"
@@ -172,7 +220,7 @@ const Dashboard = () => {
               ></div>
             ))}
           </div>
-  
+
           {/* Labels */}
           <div
             style={{
@@ -202,13 +250,15 @@ const Dashboard = () => {
           </div>
         </div>
       ) : (
-        <p style={{ textAlign: "center", fontWeight: "bold", color: "#ff0000" }}>
+        <p
+          style={{ textAlign: "center", fontWeight: "bold", color: "#ff0000" }}
+        >
           Please make a expense sheet with amount to get data.
         </p>
       )}
-  
+
       <h3>Category Wise Income Meter</h3>
-  
+
       {incomeCategories.length > 0 ? (
         <div
           className="meter-group-container"
@@ -238,7 +288,7 @@ const Dashboard = () => {
               ></div>
             ))}
           </div>
-  
+
           {/* Labels */}
           <div
             style={{
@@ -268,14 +318,14 @@ const Dashboard = () => {
           </div>
         </div>
       ) : (
-        <p style={{ textAlign: "center", fontWeight: "bold", color: "#ff0000" }}>
+        <p
+          style={{ textAlign: "center", fontWeight: "bold", color: "#ff0000" }}
+        >
           Please make a income sheet with amount to get data.
         </p>
       )}
     </>
   );
-  
-  
 };
 
 export default Dashboard;
