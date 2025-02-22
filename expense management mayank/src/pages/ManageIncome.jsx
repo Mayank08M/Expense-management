@@ -53,7 +53,7 @@ const ManageIncome = () => {
           marginBottom: "20px",
         }}
       >
-        Manage Income
+        Income Sheets
       </div>
       {data === null || data.length === 0 ? (
         <div

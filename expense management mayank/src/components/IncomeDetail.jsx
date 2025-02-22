@@ -60,13 +60,18 @@ const IncomeDetail = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    
     setNewEntry((prevState) => ({
       ...prevState,
-      [name]: value,
+      [name]: name === "amount" ? (value ? Number(value) : "") : value, // Convert "amount" to a number
     }));
   };
 
   const handleAddEntry = async () => {
+    if (!newEntry.amount || isNaN(newEntry.amount)) {
+          toast.error("Please enter a valid number for Amount", { autoClose: 2000 });
+          return;
+        }
     try {
       const { data } = await apiService.addIncomeEntry(_id, newEntry);
 

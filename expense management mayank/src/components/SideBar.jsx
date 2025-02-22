@@ -7,7 +7,8 @@ import {
   MdOutlineLocalMall,
 } from "react-icons/md";
 import { GoChecklist } from "react-icons/go";
-import { TbFileSpreadsheet } from "react-icons/tb";
+import { GiMoneyStack } from "react-icons/gi";
+import { TbFileSpreadsheet, TbShoppingCartCopy } from "react-icons/tb";
 import { BsGraphUpArrow } from "react-icons/bs";
 import styles from "../styles/sidebar.module.css";
 
@@ -29,13 +30,22 @@ const SideBar = () => {
         <span>Dashboard</span>
       </NavLink>
       <NavLink
+        to="/new-sheet"
+        className={({ isActive }) =>
+          `${styles.icondiv} ${isActive ? styles.active : ""}`
+        }
+      >
+        <TbFileSpreadsheet className={styles.icon} />
+        <span>Create Sheet</span>
+      </NavLink>
+      <NavLink
         to="/manage-expense"
         className={({ isActive }) =>
           `${styles.icondiv} ${isActive ? styles.active : ""}`
         }
       >
         <MdOutlineLocalMall className={styles.icon} />
-        <span>Manage Expense</span>
+        <span>Expense Sheets</span>
       </NavLink>
       <NavLink
         to="/manage-income"
@@ -44,7 +54,7 @@ const SideBar = () => {
         }
       >
         <MdCurrencyRupee className={styles.icon} />
-        <span>Manage Income</span>
+        <span>Income Sheets</span>
       </NavLink>
       <NavLink
         to="/track-expenses"
@@ -56,13 +66,22 @@ const SideBar = () => {
         <span>Track Expenses</span>
       </NavLink>
       <NavLink
-        to="/new-sheet"
+        to="/direct-expense"
         className={({ isActive }) =>
           `${styles.icondiv} ${isActive ? styles.active : ""}`
         }
       >
-        <TbFileSpreadsheet className={styles.icon} />
-        <span>New Sheet</span>
+        <TbShoppingCartCopy className={styles.icon} />
+        <span>Create Expense</span>
+      </NavLink>
+      <NavLink
+        to="/direct-income"
+        className={({ isActive }) =>
+          `${styles.icondiv} ${isActive ? styles.active : ""}`
+        }
+      >
+        <GiMoneyStack className={styles.icon} />
+        <span>Create Income</span>
       </NavLink>
       <NavLink
         to="/monthly-report"

@@ -53,7 +53,7 @@ const ManageExpense = () => {
           marginBottom: "20px",
         }}
       >
-        Manage Expense
+        Expense Sheets
       </div>
       {data === null || data.length === 0 ? (
         <div

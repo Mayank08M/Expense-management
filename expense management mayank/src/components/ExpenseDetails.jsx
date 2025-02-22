@@ -60,20 +60,27 @@ const ExpenseDetail = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    
     setNewEntry((prevState) => ({
       ...prevState,
-      [name]: value,
+      [name]: name === "amount" ? (value ? Number(value) : "") : value, // Convert "amount" to a number
     }));
   };
+  
 
   const handleAddEntry = async () => {
+    if (!newEntry.amount || isNaN(newEntry.amount)) {
+      toast.error("Please enter a valid number for Amount", { autoClose: 2000 });
+      return;
+    }
+  
     try {
       const { data } = await apiService.addExpenseEntry(_id, newEntry);
-
+  
       if (data.success) {
         setRows((prevRows) => [
           ...prevRows,
-          { id: prevRows.length + 1, entryId: data.data.entryId, ...newEntry }, // Ensure unique id
+          { id: prevRows.length + 1, entryId: data.data.entryId, ...newEntry },
         ]);
         setShowForm(false);
         setNewEntry({});
@@ -83,11 +90,13 @@ const ExpenseDetail = () => {
       }
     } catch (err) {
       console.error("Error adding entry:", err);
-      const errorMessage =
-        err.response?.data?.message || "Error adding entry. Please try again.";
-      toast.error(errorMessage, { position: "top-center", autoClose: 5000 });
+      toast.error("Error adding entry. Please try again.", {
+        position: "top-center",
+        autoClose: 5000,
+      });
     }
   };
+  
 
   const handleEditClick = (index) => {
     setEditIndex(index);
@@ -96,8 +105,13 @@ const ExpenseDetail = () => {
 
   const handleEditChange = (e) => {
     const { name, value } = e.target;
-    setEditEntry((prev) => ({ ...prev, [name]: value }));
+  
+    setEditEntry((prev) => ({
+      ...prev,
+      [name]: name === "amount" ? (value ? Number(value) : "") : value,
+    }));
   };
+  
 
   const handleSaveEdit = async () => {
     if (editIndex === null) return;

@@ -12,8 +12,8 @@ module.exports = {
         }
         const { name, type, columns, entries } = req.body;
 
-        if (!columns.includes("Category")) {
-            throw new ApiError(400, "Columns must include 'Category'.");
+        if (!columns.includes("Category" && "Amount")) {
+            throw new ApiError(400, "Columns must include 'Category and Amount'.");
         }
 
         if (columns.length < 1 || columns.length > 10) {
