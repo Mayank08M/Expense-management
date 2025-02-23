@@ -90,7 +90,10 @@ const ExpenseDetail = () => {
       }
     } catch (err) {
       console.error("Error adding entry:", err);
-      toast.error("Error adding entry. Please try again.", {
+      const errorMessage =
+        err.response?.data?.message ||
+        "Error adding entry. Please try again.";
+      toast.error(errorMessage, {
         position: "top-center",
         autoClose: 5000,
       });
