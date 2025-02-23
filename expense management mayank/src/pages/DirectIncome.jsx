@@ -1,56 +1,72 @@
 import React, { useState } from "react";
 import { InputText } from "primereact/inputtext";
 import { InputNumber } from "primereact/inputnumber";
+import apiService from "../services/api.service";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom";
 
-const NewSheet = () => {
-  const [paidFor, setPaidFor] = useState("");
-  const [expenseCategory, setExpenseCategory] = useState("");
+const DirectIncome = () => {
+  const [incomeFrom, setIncomeFrom] = useState("");
+  const [incomeCategory, setIncomeCategory] = useState("");
   const [amount, setAmount] = useState(null);
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
+  const navigate = useNavigate();
 
-  // API Call to Create a New Expense Entry
-  const handleCreateExpense = async () => {
-    if (!paidFor || !expenseCategory || amount === null || !description) {
-      setMessage("Please fill all fields.");
+  // API Call to Create a New Income Entry
+  const handleCreateIncome = async () => {
+    if (!incomeFrom || !incomeCategory || amount === null) {
+      toast.error("Please fill all required fields except description.", {
+        position: "top-center",
+        autoClose: 3000,
+      });
       return;
     }
 
+    const payload = {
+      incomeFrom,
+      incomeCategory,
+      amount,
+      description,
+    };
+
     setLoading(true);
-    setMessage("");
 
     try {
-      const response = await fetch(
-        import.meta.env.VITE_BASE_URL + "api/sheet/new-expense",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "x-auth-token": localStorage.getItem("authToken"),
-          },
-          body: JSON.stringify({
-            paidFor,
-            expenseCategory,
-            amount,
-            description,
-          }),
-        }
-      );
+      const response = await apiService.createDirectIncome(payload);
 
-      const data = await response.json();
+      if (response.data) {
+        toast.success(response.data.message || "Income added successfully!", {
+          position: "top-center",
+          autoClose: 3000,
+        });
 
-      if (response.ok) {
-        setMessage("Expense added successfully!");
-        setPaidFor("");
-        setExpenseCategory("");
+        // Reset form fields
+        setIncomeFrom("");
+        setIncomeCategory("");
         setAmount(null);
         setDescription("");
       } else {
-        setMessage(data.message || "Failed to add expense.");
+        toast.error(response.message || "Failed to add income.", {
+          position: "top-center",
+          autoClose: 3000,
+        });
       }
-    } catch (error) {
-      setMessage("Error adding expense. Please try again.");
+    } catch (err) {
+      console.error("Error adding income:", err);
+      const statusCode = err.response?.status;
+
+      if (statusCode === 400) {
+        navigate("/login");
+      } else {
+        const errorMessage =
+          err.response?.data?.message || "Error adding income. Please try again.";
+        toast.error(errorMessage, {
+          position: "top-center",
+          autoClose: 5000,
+        });
+      }
     } finally {
       setLoading(false);
     }
@@ -58,6 +74,7 @@ const NewSheet = () => {
 
   return (
     <>
+      <ToastContainer position="top-center" autoClose={3000} />
       <div
         style={{
           textAlign: "left",
@@ -66,10 +83,10 @@ const NewSheet = () => {
           marginBottom: "20px",
         }}
       >
-        Add Expense
+        Add Income
       </div>
 
-      {/* Paid For Input */}
+      {/* Income From Input */}
       <div
         style={{
           marginBottom: "20px",
@@ -78,11 +95,11 @@ const NewSheet = () => {
           justifyContent: "center",
         }}
       >
-        <label style={{ fontWeight: "bold", width: "150px" }}>Paid For:</label>
+        <label style={{ fontWeight: "bold", width: "150px" }}>Income From:</label>
         <InputText
-          value={paidFor}
-          onChange={(e) => setPaidFor(e.target.value)}
-          placeholder="Enter payee"
+          value={incomeFrom}
+          onChange={(e) => setIncomeFrom(e.target.value)}
+          placeholder="Enter source"
           style={{
             width: "40%",
             padding: "10px",
@@ -94,7 +111,7 @@ const NewSheet = () => {
         />
       </div>
 
-      {/* Expense Category Dropdown */}
+      {/* Income Category Dropdown */}
       <div
         style={{
           marginBottom: "20px",
@@ -103,12 +120,10 @@ const NewSheet = () => {
           justifyContent: "center",
         }}
       >
-        <label style={{ fontWeight: "bold", width: "150px" }}>
-          Income's Category:
-        </label>
+        <label style={{ fontWeight: "bold", width: "150px" }}>Income Category:</label>
         <select
-          value={expenseCategory}
-          onChange={(e) => setExpenseCategory(e.target.value)}
+          value={incomeCategory}
+          onChange={(e) => setIncomeCategory(e.target.value)}
           style={{
             width: "40%",
             padding: "10px",
@@ -116,7 +131,7 @@ const NewSheet = () => {
             border: "1px solid #ccc",
             borderRadius: "4px",
             background: "white",
-            color: expenseCategory ? "#000" : "#888",
+            color: incomeCategory ? "#000" : "#888",
             marginTop: "5px",
           }}
         >
@@ -124,8 +139,8 @@ const NewSheet = () => {
             Select Category
           </option>
           <option value="Job">Job</option>
-          <option value="Side hustle">Side hustle</option>
           <option value="Investments">Investments</option>
+          <option value="Side hustle">Side hustle</option>
           <option value="Other">Other</option>
         </select>
       </div>
@@ -141,16 +156,15 @@ const NewSheet = () => {
       >
         <label style={{ fontWeight: "bold", width: "150px" }}>Amount:</label>
         <InputNumber
-          value={amount}
-          onValueChange={(e) => setAmount(e.value)}
+          value={amount || 0}
+          onValueChange={(e) => setAmount(e.value ?? 0)}
           placeholder="Enter amount"
           style={{
             width: "40%",
-            height: "40px", // Ensuring consistent height
+            height: "40px",
             fontSize: "16px",
             border: "1px solid #ccc",
             borderRadius: "4px",
-            resize: "none",
           }}
         />
       </div>
@@ -190,40 +204,27 @@ const NewSheet = () => {
         />
       </div>
 
-      {/* Create Expense Button */}
+      {/* Create Income Button */}
       <div style={{ textAlign: "center" }}>
         <button
-          onClick={handleCreateExpense}
+          onClick={handleCreateIncome}
           disabled={loading}
           style={{
             fontSize: "18px",
             fontWeight: "bold",
             padding: "10px 20px",
             borderRadius: "4px",
-            background: "#007bff",
+            background: "#28a745",
             color: "#fff",
             border: "none",
             cursor: "pointer",
           }}
         >
-          {loading ? "Adding..." : "Add Expense"}
+          {loading ? "Adding..." : "Add Income"}
         </button>
       </div>
-
-      {/* Message Display */}
-      {message && (
-        <p
-          style={{
-            textAlign: "center",
-            color: message.includes("success") ? "green" : "red",
-            marginTop: "10px",
-          }}
-        >
-          {message}
-        </p>
-      )}
     </>
   );
 };
 
-export default NewSheet;
+export default DirectIncome;

@@ -1,56 +1,81 @@
 import React, { useState } from "react";
 import { InputText } from "primereact/inputtext";
 import { InputNumber } from "primereact/inputnumber";
+import apiService from "../services/api.service";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
-const NewSheet = () => {
+const DirectExpense = () => {
   const [paidFor, setPaidFor] = useState("");
   const [expenseCategory, setExpenseCategory] = useState("");
   const [amount, setAmount] = useState(null);
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
+  const navigate = useNavigate();
 
   // API Call to Create a New Expense Entry
   const handleCreateExpense = async () => {
-    if (!paidFor || !expenseCategory || amount === null || !description) {
-      setMessage("Please fill all fields.");
+    if (!paidFor || !expenseCategory || amount === null) {
+      toast.error("Please fill all required fields except description.", {
+        position: "top-center",
+        autoClose: 3000,
+      });
       return;
     }
 
+    const payload = {
+      paidFor,
+      expenseCategory,
+      amount,
+      description,
+    };
+
     setLoading(true);
-    setMessage("");
 
     try {
-      const response = await fetch(
-        import.meta.env.VITE_BASE_URL + "api/sheet/new-expense",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "x-auth-token": localStorage.getItem("authToken"),
-          },
-          body: JSON.stringify({
-            paidFor,
-            expenseCategory,
-            amount,
-            description,
-          }),
-        }
-      );
+      const response = await apiService.createDirectExpense(payload);
 
-      const data = await response.json();
+      if (response.data) {
+        toast.success(response.data.message || "Expense added successfully!", {
+          position: "top-center",
+          autoClose: 3000,
+        });
 
-      if (response.ok) {
-        setMessage("Expense added successfully!");
+        // Reset form fields
         setPaidFor("");
         setExpenseCategory("");
         setAmount(null);
         setDescription("");
       } else {
-        setMessage(data.message || "Failed to add expense.");
+        toast.error(response.message || "Failed to add expense.", {
+          position: "top-center",
+          autoClose: 3000,
+        });
       }
-    } catch (error) {
-      setMessage("Error adding expense. Please try again.");
+    } catch (err) {
+      console.error("Error adding expense:", err);
+      const statusCode = err.response?.status;
+
+      if (statusCode === 400) {
+        toast.error("Session expired. Redirecting to login...", {
+          position: "top-center",
+          autoClose: 3000,
+        });
+
+        setTimeout(() => {
+          navigate("/login");
+        }, 3000); // Redirect after 3 seconds
+      } else {
+        const errorMessage =
+          err.response?.data?.message ||
+          "Error adding expense. Please try again.";
+        toast.error(errorMessage, {
+          position: "top-center",
+          autoClose: 5000,
+        });
+      }
     } finally {
       setLoading(false);
     }
@@ -58,6 +83,7 @@ const NewSheet = () => {
 
   return (
     <>
+      <ToastContainer position="top-center" autoClose={3000} />
       <div
         style={{
           textAlign: "left",
@@ -141,16 +167,15 @@ const NewSheet = () => {
       >
         <label style={{ fontWeight: "bold", width: "150px" }}>Amount:</label>
         <InputNumber
-          value={amount}
-          onValueChange={(e) => setAmount(e.value)}
+          value={amount || 0} // Ensure amount is never undefined
+          onValueChange={(e) => setAmount(e.value ?? 0)}
           placeholder="Enter amount"
           style={{
             width: "40%",
-            height: "40px", // Ensuring consistent height
+            height: "40px",
             fontSize: "16px",
             border: "1px solid #ccc",
             borderRadius: "4px",
-            resize: "none",
           }}
         />
       </div>
@@ -209,21 +234,8 @@ const NewSheet = () => {
           {loading ? "Adding..." : "Add Expense"}
         </button>
       </div>
-
-      {/* Message Display */}
-      {message && (
-        <p
-          style={{
-            textAlign: "center",
-            color: message.includes("success") ? "green" : "red",
-            marginTop: "10px",
-          }}
-        >
-          {message}
-        </p>
-      )}
     </>
   );
 };
 
-export default NewSheet;
+export default DirectExpense;

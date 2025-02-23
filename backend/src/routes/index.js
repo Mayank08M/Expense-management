@@ -15,6 +15,10 @@ const defaultRoutes = [
 		path: '/dashboard',
 		route: require('./dashboard'),
 	},
+	{
+		path: '/direct',
+		route: require('./direct'),
+	},
 ];
 
 defaultRoutes.forEach((route) => {

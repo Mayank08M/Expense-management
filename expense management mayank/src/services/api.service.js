@@ -50,6 +50,9 @@ const apiService = {
   getAllIncomeSheets: () => api.get("/api/sheet/getAll-income-sheets"),
   getIncomeDetails: (_id) => api.get(`/api/sheet/getById-income/${_id}`),
   addIncomeEntry: (_id, data) => api.patch(`/api/sheet/create-income-sheet-entry/${_id}`, data),
+  //directExpense
+  createDirectExpense: (data) => api.post("/api/direct/create-expense", data),  
+  createDirectIncome: (data) => api.post("/api/direct/create-income", data),  
 };
 
 export default apiService;
