@@ -38,6 +38,23 @@ const ManageIncome = () => {
     fetchIncome();
     hasFetched.current = true;  // Mark that data has been fetched
   }, [navigate]);
+
+  const handleDelete = async (_id) => {
+    if (window.confirm("Are you sure you want to delete this sheet?")) {
+      try {
+        await apiService.deleteSheet(_id);
+        setData((prevRows) =>
+          prevRows.filter((row) => row._id !== _id)
+        );
+        toast.success("Sheet deleted successfully!", { autoClose: 1000 });
+      } catch (err) {
+        toast.error("Error deleting sheet. Please try again.", {
+          position: "top-center",
+          autoClose: 4000,
+        });
+      }
+    }
+  };
   
 
   if (loading) return <p>Loading...</p>;
@@ -95,6 +112,37 @@ const ManageIncome = () => {
                         View
                       </button>
                     </NavLink>
+                    <button
+                      style={{
+                        padding: "5px 10px",
+                        backgroundColor: "red",
+                        color: "white",
+                        border: "2px solid red",
+                        cursor: "pointer",
+                        transition: "0.3s ease",
+                        marginLeft: "5px",
+                      }}
+                      onClick={() => handleDelete(income._id)}
+                      onMouseEnter={(e) => {
+                        e.target.style.backgroundColor = "white"; // White background on hover
+                        e.target.style.borderColor = "red"; // Yellow border on hover
+                        e.target.style.color = "red"; // Text color changes to red
+                    
+                        // Change the icon color by modifying the first child (assuming it's the icon)
+                        const icon = e.currentTarget.firstChild;
+                        if (icon) icon.style.color = "red"; // Change icon color to red
+                      }}
+                      onMouseLeave={(e) => {
+                        e.target.style.backgroundColor = "red"; // Reset background
+                        e.target.style.borderColor = "red"; // Reset border
+                        e.target.style.color = "white"; // Reset text color
+                    
+                        const icon = e.currentTarget.firstChild;
+                        if (icon) icon.style.color = "white"; // Reset icon color to white
+                      }}
+                    >
+                      Delete
+                    </button>
                   </td>
                 </tr>
               ))}

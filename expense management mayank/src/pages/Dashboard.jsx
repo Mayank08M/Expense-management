@@ -1,8 +1,10 @@
 import { Chart } from "primereact/chart";
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import apiService from "../services/api.service";
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   const [chartData, setChartData] = useState({});
   const [chartOptions, setChartOptions] = useState({});
   const [expenseCategories, setExpenseCategories] = useState([]);
@@ -27,7 +29,6 @@ const Dashboard = () => {
 
       try {
         const response = await apiService.getExpenseCategoryPercentage();
-        console.log("Fetched expense categories:", response.data);
 
         const data = Array.isArray(response.data.data)
           ? response.data.data
@@ -39,8 +40,12 @@ const Dashboard = () => {
 
         setExpenseCategories(coloredData);
       } catch (error) {
-        console.error("Error fetching expense categories:", error);
-        setExpenseCategories([]);
+        if (err?.response?.status === 400) {
+          navigate("/login"); // Redirect to login if unauthorized
+        } else {
+          console.error("Error fetching expense categories:", error);
+          setExpenseCategories([]);
+        }
       }
     };
 
@@ -54,7 +59,6 @@ const Dashboard = () => {
 
       try {
         const response = await apiService.getIncomeCategoryPercentage();
-        console.log("Fetched income categories:", response.data);
 
         const data = Array.isArray(response.data.data)
           ? response.data.data
@@ -66,8 +70,12 @@ const Dashboard = () => {
 
         setIncomeCategories(coloredData);
       } catch (error) {
-        console.error("Error fetching income categories:", error);
-        setIncomeCategories([]);
+        if (error?.response?.status === 400) {
+          navigate("/login");
+        } else {
+          console.error("Error fetching income categories:", error);
+          setIncomeCategories([]);
+        }
       }
     };
 
@@ -132,7 +140,11 @@ const Dashboard = () => {
           setChartData(data);
         }
       } catch (error) {
-        console.error("Error fetching chart data:", error);
+        if (error?.response?.status === 400) {
+          navigate("/login");
+        } else {
+          console.error("Error fetching chart data:", error);
+        }
       }
     };
 

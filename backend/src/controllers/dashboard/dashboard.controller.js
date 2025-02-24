@@ -107,6 +107,18 @@ module.exports = {
         res.status(200).json(
             new ApiResponse(200, result, 'Data retrieved successfully.')
         );
-    })
+    }),
+    getLastThirtyDaysData: AsyncHandler(async(req, res)=> {
+        const userId = req.user.userId;
+        if (!userId) {
+            throw new ApiError('User not found.');
+        }
+
+        const result = await dashboardService.getSheetDataLast30Days(userId);
+        
+        res.status(200).json(
+            new ApiResponse(200, result, 'Data retrieved successfully.')
+        );
+    }),
     
 }

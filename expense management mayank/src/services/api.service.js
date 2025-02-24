@@ -38,8 +38,10 @@ const apiService = {
   getExpenseCategoryPercentage: () => api.get("/api/dashboard/getAllExpense"),
   getIncomeCategoryPercentage: () => api.get("/api/dashboard/getAllIncome"),
   getFiveMonthsData: () => api.get("/api/dashboard/getLastFiveMonthsData"),
+  getThirtyDaysData: () => api.get("/api/dashboard/getThirtyDaysData"),
 
   updateEntry: (_id, data) => api.patch(`/api/sheet/${_id}/updateEntry`, data),
+  deleteSheet: (_id) => api.delete(`api/sheet/deleteSheet/${_id}`),
   deleteEntry: (_id, entryId) => api.delete(`api/sheet/delete/${_id}`, { data: { entryId } }),
   deletAllEntries: (_id) => api.patch(`/api/sheet/deleteAllEntries/${_id}`),
   //expenseRoutes
