@@ -55,6 +55,10 @@ const apiService = {
   //directExpense
   createDirectExpense: (data) => api.post("/api/direct/create-expense", data),  
   createDirectIncome: (data) => api.post("/api/direct/create-income", data),  
+  getAllDirectIncome: () => api.get("/api/direct/getAll-income"),
+  updateDirectIncome: (data) => api.patch("/api/direct/update-income", data),
+  deleteDirectIncome: (entryId) => api.delete("/api/direct/delete-income", { data: { entryId } }),
+  deleteAllDirectIncome: () => api.delete("/api/direct/deleteAll-income"),
 };
 
 export default apiService;

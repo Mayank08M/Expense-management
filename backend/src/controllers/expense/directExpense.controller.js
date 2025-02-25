@@ -30,4 +30,21 @@ module.exports = {
       .status(201)
       .json(new ApiResponse(201, {}, "Expense added successfully."));
   }),
+
+  getAllDirectExpenses: AsyncHandler(async (req, res) => {
+    const userId = req.user.userId;
+    if (!userId) {
+      throw new ApiError(401, 'User not found.');
+    }
+
+    const result = await directExpenseService.getAll(userId);
+
+    if (!result || result.length === 0) {
+      throw new ApiError(404, 'No Data found.');
+    }
+
+    res.status(200).json(
+      new ApiResponse(200, result, 'Data retrieved successfully.')
+    );
+  })
 };

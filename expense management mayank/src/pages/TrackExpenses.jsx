@@ -13,7 +13,7 @@ const TrackExpenses = () => {
           marginBottom: "20px",
         }}
       >
-        Track Expenses
+        Track Direct Expenses
       </div>
       {data === null ? ( // Conditional rendering for when data is null
         <div

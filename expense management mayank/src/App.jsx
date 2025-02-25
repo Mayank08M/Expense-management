@@ -14,6 +14,7 @@ import ExpenseDetail from "./components/ExpenseDetails";
 import IncomeDetail from "./components/IncomeDetail";
 import DirectExpense from "./pages/DirectExpense";
 import DirectIncome from "./pages/DirectIncome";
+import TrackIncome from "./pages/TrackIncome";
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
           <Route path="/direct-income" element={<DirectIncome />} />
           <Route path="/direct-expense" element={<DirectExpense />} />
           <Route path="/track-expenses" element={<TrackExpenses />} />
+          <Route path="/track-income" element={<TrackIncome />} />
           <Route path="/new-sheet" element={<NewSheet />} />
           <Route path="/monthly-report" element={<MonthlyReport />} />
         </Route>

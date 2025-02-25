@@ -63,7 +63,16 @@ const SideBar = () => {
         }
       >
         <GoChecklist className={styles.icon} />
-        <span>Track Expenses</span>
+        <span>Track Direct Expenses</span>
+      </NavLink>
+      <NavLink
+        to="/track-income"
+        className={({ isActive }) =>
+          `${styles.icondiv} ${isActive ? styles.active : ""}`
+        }
+      >
+        <GoChecklist className={styles.icon} />
+        <span>Track Direct Incomes</span>
       </NavLink>
       <NavLink
         to="/direct-expense"
@@ -72,7 +81,7 @@ const SideBar = () => {
         }
       >
         <TbShoppingCartCopy className={styles.icon} />
-        <span>Create Expense</span>
+        <span>Direct Expense</span>
       </NavLink>
       <NavLink
         to="/direct-income"
@@ -81,7 +90,7 @@ const SideBar = () => {
         }
       >
         <GiMoneyStack className={styles.icon} />
-        <span>Create Income</span>
+        <span>Direct Income</span>
       </NavLink>
       <NavLink
         to="/monthly-report"
