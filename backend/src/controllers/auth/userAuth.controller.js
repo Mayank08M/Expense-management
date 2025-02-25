@@ -12,13 +12,13 @@ module.exports = {
         const existingUser = await userModel.findOne({ emailAddress });
 
         if (!existingUser) {
-            throw new ApiError(400, "User not found.");
+            throw new ApiError(401, "User not found.");
         }
 
         const isPasswordCorrect = await bcrypt.compare(password, existingUser.passwordHash);
 
         if (!isPasswordCorrect) {
-            throw new ApiError(400, "Invalid credentials.");
+            throw new ApiError(401, "Invalid credentials.");
         }
         // console.log(existingUser)
         const tokens = await tokenService.generateAuthTokens(existingUser);

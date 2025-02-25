@@ -7,7 +7,7 @@ module.exports = {
     getCategoryWiseExpenseData: AsyncHandler(async (req, res) => {
         const userId = req.user.userId;
         if (!userId) {
-            throw new ApiError('User not found.');
+            throw new ApiError(401, 'User not found.');
         }
     
         // Fetch all expense sheets for the user
@@ -53,7 +53,7 @@ module.exports = {
     getCategoryWiseIncomeData: AsyncHandler(async (req, res) => {
         const userId = req.user.userId;
         if (!userId) {
-            throw new ApiError('User not found.');
+            throw new ApiError(401, 'User not found.');
         }
     
         // Fetch all expense sheets for the user
@@ -99,7 +99,7 @@ module.exports = {
     getLastFiveMonthData: AsyncHandler(async(req, res)=> {
         const userId = req.user.userId;
         if (!userId) {
-            throw new ApiError('User not found.');
+            throw new ApiError(401, 'User not found.');
         }
 
         const result = await dashboardService.getSheetDataLast5Months(userId);
@@ -111,7 +111,7 @@ module.exports = {
     getLastThirtyDaysData: AsyncHandler(async(req, res)=> {
         const userId = req.user.userId;
         if (!userId) {
-            throw new ApiError('User not found.');
+            throw new ApiError(401, 'User not found.');
         }
 
         const result = await dashboardService.getSheetDataLast30Days(userId);

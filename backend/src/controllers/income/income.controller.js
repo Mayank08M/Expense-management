@@ -32,7 +32,7 @@ module.exports = {
     getAllSheets: AsyncHandler(async (req, res) => {
         const userId = req.user.userId; // Extract user ID from token
         if (!userId) {
-            throw new ApiError('User ID not found in token.');
+            throw new ApiError(401, 'User ID not found in token.');
         }
         const sheets = await sheetService.getAllIncomeSheets(userId);
         if (!sheets[0]) {

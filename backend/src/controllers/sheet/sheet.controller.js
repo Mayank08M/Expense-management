@@ -8,7 +8,7 @@ module.exports = {
         // const { name, type, columns[0], entries[0] } = req.body;
         const userId = req.user.userId; // Extract user ID from token
         if (!userId) {
-            throw new ApiError('User not found.');
+            throw new ApiError(401, 'User not found.');
         }
         const { name, type, columns, entries } = req.body;
 
@@ -31,7 +31,7 @@ module.exports = {
     getAllSheets: AsyncHandler(async (req, res) => {
         const userId = req.user.userId; // Extract user ID from token
         if (!userId) {
-            throw new ApiError('User not found.');
+            throw new ApiError(401, 'User not found.');
         }
         const sheets = await sheetService.getAllSheets(userId);
         if (!sheets[0]) {
@@ -49,7 +49,7 @@ module.exports = {
         const { _id } = req.params;
         const { entryId, data } = req.body;
         if (!userId) {
-            throw new ApiError('User not found.');
+            throw new ApiError(401, 'User not found.');
         }
         await sheetService.update(userId, _id, entryId, data)
         res
@@ -63,7 +63,7 @@ module.exports = {
         const { _id } = req.params;
         const { entryId } = req.body;
         if (!userId || !entryId) {
-            throw new ApiError('Record not found.');
+            throw new ApiError(404, 'Record not found.');
         }
         await sheetService.deleteEntry(userId, _id, entryId)
         res
@@ -76,7 +76,7 @@ module.exports = {
         const userId = req.user.userId;
         const { _id } = req.params;
         if (!userId) {
-            throw new ApiError('User not found.');
+            throw new ApiError(401, 'User not found.');
         }
         await sheetService.deleteAllEntries(userId, _id)
         res
@@ -89,7 +89,7 @@ module.exports = {
         const userId = req.user.userId;
         const { _id } = req.params;
         if (!userId) {
-            throw new ApiError('User not found.');
+            throw new ApiError(401, 'User not found.');
         }
         await sheetService.deleteSheet(userId, _id)
         res

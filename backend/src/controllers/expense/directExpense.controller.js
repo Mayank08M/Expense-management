@@ -8,13 +8,12 @@ module.exports = {
   create: AsyncHandler(async (req, res) => {
     const userId = req.user.userId;
     if (!userId) {
-      throw new ApiError("User not found.");
+      throw new ApiError(401, "User not found.");
     }
     const { expenseCategory, paidFor, amount, description } = req.body;
     if (!expenseCategory || !paidFor || amount === undefined) {
-      throw new ApiError(
-        "Missing required fields: expenseCategory, paidFor, and amount are required.",
-        400
+      throw new ApiError(400,
+        "Missing required fields: expenseCategory, paidFor, and amount are required."
       );
     }
     const entryId = uuidv4();
