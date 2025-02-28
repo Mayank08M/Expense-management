@@ -7,7 +7,7 @@ import { FaRegEdit, FaRegSave } from "react-icons/fa";
 import { MdOutlineDelete, MdOutlineCancel, MdDelete } from "react-icons/md";
 import DataGrid from "react-data-grid";
 
-const TrackExpenses = () => {
+const TrackIncome = () => {
   const navigate = useNavigate();
   const [columns, setColumns] = useState([]);
   const [rows, setRows] = useState([]);
@@ -19,7 +19,7 @@ const TrackExpenses = () => {
   useEffect(() => {
     const fetchIncomeDetails = async () => {
       try {
-        const response = await apiService.getAllDirectExpense();
+        const response = await apiService.getAllDirectIncome();
         const result = response.data;
 
         if (result.success && result.data.length > 0) {
@@ -76,13 +76,8 @@ const TrackExpenses = () => {
     if (editIndex === null) return;
 
     try {
-      const payload = {
-        entryId: editEntry.entryId,
-        paidFor: editEntry["Paid For"], // Ensure paidFor is included
-        expenseCategory: editEntry["Expense Category"], // Ensure expenseCategory is included
-        data: editEntry,
-      };
-      const response = await apiService.updateDirectExpense(payload);
+      const payload = { entryId: editEntry.entryId, data: editEntry };
+      const response = await apiService.updateDirectIncome(payload);
 
       if (response.data.success) {
         setRows((prevRows) => {
@@ -98,19 +93,15 @@ const TrackExpenses = () => {
         toast.error("Failed to update entry");
       }
     } catch (err) {
-      toast.error(
-        err.response?.data?.message || "Error updating entry. Please try again."
-      );
+      toast.error(err.response?.data?.message || "Error updating entry. Please try again.");
     }
   };
 
   const handleDelete = async (entryId) => {
     if (window.confirm("Are you sure you want to delete this entry?")) {
       try {
-        await apiService.deleteDirectExpense(entryId);
-        setRows((prevRows) =>
-          prevRows.filter((row) => row.entryId !== entryId)
-        );
+        await apiService.deleteDirectIncome(entryId);
+        setRows((prevRows) => prevRows.filter((row) => row.entryId !== entryId));
         toast.success("Entry deleted successfully!");
       } catch (err) {
         toast.error(err.response?.data?.message || "Error deleting entry. Please try again.");
@@ -126,7 +117,7 @@ const TrackExpenses = () => {
 
     if (window.confirm("Are you sure you want to delete all entries?")) {
       try {
-        await apiService.deleteAllDirectExpense();
+        await apiService.deleteAllDirectIncome();
         toast.success("All entries deleted successfully!");
         setRows([]);
       } catch (err) {
@@ -145,7 +136,7 @@ const TrackExpenses = () => {
           marginBottom: "20px",
         }}
       >
-        Track Direct Expense
+        Track Direct Income
       </div>
 
       {loading ? (
@@ -273,4 +264,4 @@ const TrackExpenses = () => {
   );
 };
 
-export default TrackExpenses;
+export default TrackIncome;

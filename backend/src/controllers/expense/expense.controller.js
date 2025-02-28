@@ -32,7 +32,7 @@ module.exports = {
     getAllSheets: AsyncHandler(async (req, res) => {
         const userId = req.user.userId; // Extract user ID from token
         if (!userId) {
-            throw new ApiError('User ID not found in token.');
+            throw new ApiError(401, 'User not found.');
         }
         const sheets = await sheetService.getAllExpenseSheets(userId);
         if (!sheets[0]) {
@@ -49,7 +49,7 @@ module.exports = {
     getById: AsyncHandler(async (req, res) => {
         const userId = req.user.userId; // Extract user ID from token
         if (!userId) {
-            throw new ApiError('User ID not found in token.');
+            throw new ApiError(401, 'User not found.');
         }
         const sheetId = req.params._id;
         const sheet = await sheetService.getExpenseSheetById(sheetId, userId);
@@ -86,9 +86,9 @@ module.exports = {
 
         const entryData = { ...req.body, entryId };
 
-        await sheetService.createSheetEntry(entryData, userId, _id);
+        const result = await sheetService.createSheetEntry(entryData, userId, _id);
 
-        res.status(201).json(new ApiResponse(201, {}, 'Entry created successfully.'));
+        res.status(201).json(new ApiResponse(201, result, 'Entry created successfully.'));
     }),
 
 };

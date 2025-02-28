@@ -135,7 +135,7 @@ const NewSheet = () => {
           marginBottom: "30px",
         }}
       >
-        <div style={{ position: "relative", width: "100%", maxWidth: "400px" }}>
+        <div style={{ position: "relative", width: "100%", maxWidth: "400px"  }}>
           <select
             value={listType}
             onChange={(e) => setListType(e.target.value)}
@@ -242,7 +242,7 @@ const NewSheet = () => {
                 fontSize: columns[index] ? "12px" : "16px",
                 transform: "translateY(-50%)",
                 transition: "0.2s ease-in-out",
-                background: "white",
+                background: "white",          
                 padding: "0 5px",
               }}
             >
@@ -289,3 +289,4 @@ const NewSheet = () => {
 };
 
 export default NewSheet;
+        
