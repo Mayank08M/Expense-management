@@ -4,6 +4,9 @@ module.exports = {
   create: async (data) => {
     return await directIncomeModel.create(data);
   },
+  getAllData: async (userId) => {
+    return await directIncomeModel.find({ userId });
+  },
   getAll: async (userId) => {
     const results = await directIncomeModel
       .find({ userId }, { incomeFrom: 1, entryId: 1, incomeCategory: 1, amount: 1, description: 1 }) // Include fields
@@ -30,10 +33,10 @@ module.exports = {
     });
   },
 
-  delete: async(userId, entryId) => {
+  delete: async (userId, entryId) => {
     return await directIncomeModel.deleteOne({ userId, entryId });
   },
   deleteAll: async (userId) => {
     return await directIncomeModel.deleteMany({ userId });
-  }  
+  }
 };

@@ -53,7 +53,12 @@ const apiService = {
   getIncomeDetails: (_id) => api.get(`/api/sheet/getById-income/${_id}`),
   addIncomeEntry: (_id, data) => api.patch(`/api/sheet/create-income-sheet-entry/${_id}`, data),
   //directExpense
-  createDirectExpense: (data) => api.post("/api/direct/create-expense", data),  
+  createDirectExpense: (data) => api.post("/api/direct/create-expense", data), 
+  getAllDirectExpense: () => api.get("/api/direct/getAll-expense"),
+  updateDirectExpense: (data) => api.patch("/api/direct/update-expense", data),
+  deleteDirectExpense: (entryId) => api.delete("/api/direct/delete-expense", { data: { entryId } }),
+  deleteAllDirectExpense: () => api.delete("/api/direct/deleteAll-expense"),
+
   createDirectIncome: (data) => api.post("/api/direct/create-income", data),  
   getAllDirectIncome: () => api.get("/api/direct/getAll-income"),
   updateDirectIncome: (data) => api.patch("/api/direct/update-income", data),

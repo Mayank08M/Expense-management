@@ -7,6 +7,9 @@ userRoutes.use(auth())
 
 userRoutes.post('/create-expense', directExpenseController.create),
 userRoutes.get('/getAll-expense', directExpenseController.getAllDirectExpenses),
+userRoutes.patch('/update-expense', directExpenseController.updateEntry),
+userRoutes.delete('/delete-expense', directExpenseController.deleteEntry),
+userRoutes.delete('/deleteAll-expense', directExpenseController.deleteAll),
 //income
 userRoutes.post('/create-income', directIncomeController.create),
 userRoutes.get('/getAll-income', directIncomeController.getAllDirectIncomes),

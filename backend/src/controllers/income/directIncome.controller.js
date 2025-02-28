@@ -4,6 +4,8 @@ const ApiResponse = require("../../utils/handlers/ApiResponse.handler");
 const { v4: uuidv4 } = require("uuid");
 const { directIncomeService } = require("../../services");
 
+const incomeCategories = ["Job", "Side hustle", "Investments", "Other"];
+
 module.exports = {
   create: AsyncHandler(async (req, res) => {
     const userId = req.user.userId;
@@ -59,6 +61,9 @@ module.exports = {
     } = data;
     if (!userId) {
       throw new ApiError(401, 'User not found.');
+    }
+    if (!incomeCategories.includes(incomeCategory)) {
+      throw new ApiError(400, `Invalid Expense Category. Allowed values are: ${incomeCategories.join(", ")}`);
     }
     const result = await directIncomeService.update(userId, entryId, incomeFrom, incomeCategory, amount, description);
     res.status(200).json(

@@ -93,7 +93,7 @@ const TrackIncome = () => {
         toast.error("Failed to update entry");
       }
     } catch (err) {
-      toast.error("Error updating entry. Please try again.");
+      toast.error(err.response?.data?.message || "Error updating entry. Please try again.");
     }
   };
 
@@ -104,7 +104,7 @@ const TrackIncome = () => {
         setRows((prevRows) => prevRows.filter((row) => row.entryId !== entryId));
         toast.success("Entry deleted successfully!");
       } catch (err) {
-        toast.error("Error deleting entry. Please try again.");
+        toast.error(err.response?.data?.message || "Error deleting entry. Please try again.");
       }
     }
   };
@@ -121,7 +121,7 @@ const TrackIncome = () => {
         toast.success("All entries deleted successfully!");
         setRows([]);
       } catch (err) {
-        toast.error("Error deleting entries. Please try again.");
+        toast.error(err.response?.data?.message || "Error deleting entries. Please try again.");
       }
     }
   };
@@ -221,7 +221,26 @@ const TrackIncome = () => {
                 ),
               },
             ]}
-            rows={rows}
+            rows={rows.map((row, index) =>
+              editIndex === index
+                ? {
+                    ...row,
+                    ...Object.fromEntries(
+                      columns
+                        .filter((col) => col.editable)
+                        .map((col) => [
+                          col.key,
+                          <input
+                            type="text"
+                            name={col.key}
+                            value={editEntry[col.key] || ""}
+                            onChange={handleEditChange}
+                          />,
+                        ])
+                    ),
+                  }
+                : row
+            )}
             defaultColumnOptions={{ resizable: true }}
             style={{ height: 400 }}
           />

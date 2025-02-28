@@ -199,7 +199,38 @@ const Dashboard = () => {
       >
         Welcome to Dashboard
       </div>
+      {/* <Chart type="bar" data={chartData} options={chartOptions} /> */}
+      {chartData.labels && chartData.labels.length > 0 ? (
       <Chart type="bar" data={chartData} options={chartOptions} />
+    ) : (
+      <>
+        <p style={{ textAlign: "center", fontWeight: "bold", color: "#ff0000" }}>
+          Please make a sheet to see a graphical representation of your actual income and expenses just like below.
+        </p>
+        {/* Demo Chart */}
+        <Chart
+          type="bar"
+          data={{
+            labels: ["January", "February", "March", "April", "May"],
+            datasets: [
+              {
+                label: "Income",
+                backgroundColor: "#007bff",
+                borderColor: "#007bff",
+                data: [2000, 2500, 2200, 2700, 2400],
+              },
+              {
+                label: "Expenses",
+                backgroundColor: "#ff0000",
+                borderColor: "#ff0000",
+                data: [1800, 2100, 1900, 2300, 2000],
+              },
+            ],
+          }}
+          options={chartOptions}
+        />
+      </>
+    )}
 
       <h3>Category Wise Expense Meter</h3>
 

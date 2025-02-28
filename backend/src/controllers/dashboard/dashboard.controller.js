@@ -1,4 +1,5 @@
-const { dashboardService } = require("../../services");
+const { updateSearchIndex } = require("../../models/userModel");
+const { dashboardService, directExpenseService, directIncomeService } = require("../../services");
 const ApiError = require("../../utils/handlers/ApiError.handler");
 const ApiResponse = require("../../utils/handlers/ApiResponse.handler");
 const { AsyncHandler } = require("../../utils/handlers/Async.handler");
@@ -9,22 +10,23 @@ module.exports = {
         if (!userId) {
             throw new ApiError(401, 'User not found.');
         }
-    
+
         // Fetch all expense sheets for the user
         const expenseSheetsData = await dashboardService.getAllExpenseSheets(userId);
-        
-        if (!expenseSheetsData.length) {
-            throw new ApiError(404, 'Make a sheet to get data.');
+        const directExpenseData = await directExpenseService.getAllData(userId);
+
+        if (!expenseSheetsData.length && !directExpenseData.length) {
+            throw new ApiError(404, 'Make a sheet or add direct expenses to get data.');
         }
-    
+
         let categoryTotals = {};
         let overallTotal = 0;
-    
+
         expenseSheetsData.forEach(sheet => {
             sheet.entries.forEach(entry => {
                 const category = entry.category;
                 const amount = parseFloat(entry.amount); // Convert amount to number
-                
+
                 if (!categoryTotals[category]) {
                     categoryTotals[category] = 0;
                 }
@@ -32,19 +34,30 @@ module.exports = {
                 overallTotal += amount;
             });
         });
-    
+
+        directExpenseData.forEach(expense => {
+            const category = expense.expenseCategory;
+            const amount = parseFloat(expense.amount); // Convert amount to number
+
+            if (!categoryTotals[category]) {
+                categoryTotals[category] = 0;
+            }
+            categoryTotals[category] += amount;
+            overallTotal += amount;
+        });
+
         // Calculate percentage for each category
         const categoryPercentages = Object.keys(categoryTotals).map(category => {
             const totalSpent = categoryTotals[category] || 0;
             return {
                 category,
                 totalSpent,
-                percentage: totalSpent > 0 
-                    ? ((totalSpent / overallTotal) * 100).toFixed(2) + '%' 
-                    : "Please add a entry with Amount to get data"
+                percentage: totalSpent > 0
+                    ? ((totalSpent / overallTotal) * 100).toFixed(2) + '%'
+                    : "Please add an entry with Amount to get data"
             };
         });
-    
+
         res.status(200).json(
             new ApiResponse(200, categoryPercentages, 'Category-wise expenses retrieved successfully.')
         );
@@ -56,21 +69,23 @@ module.exports = {
             throw new ApiError(401, 'User not found.');
         }
     
-        // Fetch all expense sheets for the user
+        // Fetch all income sheets and direct income for the user
         const incomeSheetsData = await dashboardService.getAllIncomeSheets(userId);
-        
-        if (!incomeSheetsData.length) {
-            throw new ApiError(404, 'Make a sheet to get data.');
+        const directIncomeData = await directIncomeService.getAllData(userId);
+    
+        if (!incomeSheetsData.length && !directIncomeData.length) {
+            throw new ApiError(404, 'Make a sheet or add direct income to get data.');
         }
     
         let categoryTotals = {};
         let overallTotal = 0;
     
+        // Process income sheets data
         incomeSheetsData.forEach(sheet => {
             sheet.entries.forEach(entry => {
                 const category = entry.category;
                 const amount = parseFloat(entry.amount); // Convert amount to number
-                
+    
                 if (!categoryTotals[category]) {
                     categoryTotals[category] = 0;
                 }
@@ -79,15 +94,27 @@ module.exports = {
             });
         });
     
+        // Process direct income data
+        directIncomeData.forEach(income => {
+            const category = income.incomeCategory;
+            const amount = parseFloat(income.amount); // Convert amount to number
+    
+            if (!categoryTotals[category]) {
+                categoryTotals[category] = 0;
+            }
+            categoryTotals[category] += amount;
+            overallTotal += amount;
+        });
+    
         // Calculate percentage for each category
         const categoryPercentages = Object.keys(categoryTotals).map(category => {
-            const totalSpent = categoryTotals[category] || 0;
+            const totalIncome = categoryTotals[category] || 0;
             return {
                 category,
-                totalSpent,
-                percentage: totalSpent > 0 
-                    ? ((totalSpent / overallTotal) * 100).toFixed(2) + '%' 
-                    : "Please add a entry with Amount to get data"
+                totalIncome,
+                percentage: totalIncome > 0
+                    ? ((totalIncome / overallTotal) * 100).toFixed(2) + '%'
+                    : "Please add an entry with Amount to get data"
             };
         });
     
@@ -95,30 +122,31 @@ module.exports = {
             new ApiResponse(200, categoryPercentages, 'Category-wise income retrieved successfully.')
         );
     }),
+    
 
-    getLastFiveMonthData: AsyncHandler(async(req, res)=> {
+    getLastFiveMonthData: AsyncHandler(async (req, res) => {
         const userId = req.user.userId;
         if (!userId) {
             throw new ApiError(401, 'User not found.');
         }
 
         const result = await dashboardService.getSheetDataLast5Months(userId);
-        
+
         res.status(200).json(
             new ApiResponse(200, result, 'Data retrieved successfully.')
         );
     }),
-    getLastThirtyDaysData: AsyncHandler(async(req, res)=> {
+    getLastThirtyDaysData: AsyncHandler(async (req, res) => {
         const userId = req.user.userId;
         if (!userId) {
             throw new ApiError(401, 'User not found.');
         }
 
         const result = await dashboardService.getSheetDataLast30Days(userId);
-        
+
         res.status(200).json(
             new ApiResponse(200, result, 'Data retrieved successfully.')
         );
     }),
-    
+
 }
