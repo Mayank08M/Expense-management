@@ -1,13 +1,13 @@
 require("dotenv").config();
 const mongoose = require("mongoose");
 const express = require("express");
-const routes = require('./routes/index');
-const logger = require("./config/logger");
-const { errorConverter, errorHandler } = require("./middlewares/error");
+const routes = require('./src/routes/index');
+const logger = require("./src/config/logger");
+const { errorConverter, errorHandler } = require("./src/middlewares/error");
 const cors = require('cors');
 const httpStatus = require('http-status');
-const corsOptions = require('./config/cors');
-const ApiError = require("./utils/handlers/ApiError.handler");
+const corsOptions = require('./src/config/cors');
+const ApiError = require("./src/utils/handlers/ApiError.handler");
 
 const app = express();
 app.use(express.static("public"));
