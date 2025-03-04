@@ -135,7 +135,13 @@ module.exports = {
             dashboardService.getSheetDataLast5Months(userId),
             dashboardService.getDirectExpenseIncomeLast5Months(userId)
         ])
+        const isResultOnlyZeros = result.length > 0 && result.every(item => item.totalIncome === 0 && item.totalExpense === 0);
 
+        if (isResultOnlyZeros && directData.length === 0) {
+            return res.status(200).json(
+                new ApiResponse(200, [], 'No data available for the last five months.')
+            );
+        }
         const directExpenses = Array.isArray(directData) ? directData.map(d => ({
             year: d._id?.year,
             month: d._id?.month,
@@ -147,7 +153,6 @@ module.exports = {
             month: d._id?.month,
             totalDirectIncome: d.totalDirectIncome
         })) : [];
-
 
         result.forEach((item) => {
             const directExpense = directExpenses.find(d => d.year === item._id.year && d.month === item._id.month);
@@ -165,6 +170,7 @@ module.exports = {
             delete item.totalDirectExpense;
             delete item.totalDirectIncome;
         });
+        console.log(result)
 
         res.status(200).json(
             new ApiResponse(200, result, 'Data retrieved successfully.')
