@@ -184,9 +184,24 @@ module.exports = {
         }
 
         const result = await dashboardService.getSheetDataLast30Days(userId);
+        const directDataResult = await dashboardService.getDirectDataLast30Days(userId);
+
+        const mergedData = [...result, ...directDataResult].reduce((acc, curr) => {
+            const key = `${curr._id.year}-${curr._id.month}-${curr._id.day}`;
+            if (!acc[key]) {
+                acc[key] = { _id: curr._id, totalIncome: 0, totalExpense: 0 };
+            }
+            if (curr.totalIncome) acc[key].totalIncome += curr.totalIncome;
+            if (curr.totalExpense) acc[key].totalExpense += curr.totalExpense;
+            return acc;
+        }, {});
+
+        const finalResult = Object.values(mergedData).sort((a, b) =>
+            new Date(b._id.year, b._id.month - 1, b._id.day) - new Date(a._id.year, a._id.month - 1, a._id.day)
+        );
 
         res.status(200).json(
-            new ApiResponse(200, result, 'Data retrieved successfully.')
+            new ApiResponse(200, finalResult, 'Data retrieved successfully.')
         );
     }),
 
