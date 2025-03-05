@@ -206,7 +206,72 @@ module.exports = {
         ]);
 
         return result;
+    },
+
+    getDirectDataLast30Days: async (userId) => {
+        const { ObjectId } = require("mongodb");
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        thirtyDaysAgo.setHours(0, 0, 0, 0); // Normalize time to start of the day
+    
+        const incomeData = await directIncomeModel.aggregate([
+            {
+                $match: {
+                    userId: new ObjectId(userId),
+                    createdAt: { $gte: thirtyDaysAgo }
+                }
+            },
+            {
+                $group: {
+                    _id: {
+                        year: { $year: "$createdAt" },
+                        month: { $month: "$createdAt" },
+                        day: { $dayOfMonth: "$createdAt" }
+                    },
+                    totalIncome: { 
+                        $sum: { $toDouble: { $ifNull: [{ $toString: "$amount" }, "0"] } } 
+                    }
+                }
+            }
+        ]);
+    
+        const expenseData = await directExpenseModel.aggregate([
+            {
+                $match: {
+                    userId: new ObjectId(userId),
+                    createdAt: { $gte: thirtyDaysAgo }
+                }
+            },
+            {
+                $group: {
+                    _id: {
+                        year: { $year: "$createdAt" },
+                        month: { $month: "$createdAt" },
+                        day: { $dayOfMonth: "$createdAt" }
+                    },
+                    totalExpense: { 
+                        $sum: { $toDouble: { $ifNull: [{ $toString: "$amount" }, "0"] } } 
+                    }
+                }
+            }
+        ]);
+    
+        // Merging incomeData and expenseData into a single array
+        const mergedData = [...incomeData, ...expenseData].reduce((acc, curr) => {
+            const key = `${curr._id.year}-${curr._id.month}-${curr._id.day}`;
+            if (!acc[key]) {
+                acc[key] = { _id: curr._id, totalIncome: 0, totalExpense: 0 };
+            }
+            if (curr.totalIncome) acc[key].totalIncome += curr.totalIncome;
+            if (curr.totalExpense) acc[key].totalExpense += curr.totalExpense;
+            return acc;
+        }, {});
+    
+        return Object.values(mergedData).sort((a, b) =>
+            new Date(b._id.year, b._id.month - 1, b._id.day) - new Date(a._id.year, a._id.month - 1, a._id.day)
+        );
     }
+    
 
 
 
