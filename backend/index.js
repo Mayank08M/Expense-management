@@ -5,7 +5,6 @@ const routes = require('./src/routes/index');
 const logger = require("./src/config/logger");
 const { errorConverter, errorHandler } = require("./src/middlewares/error");
 const cors = require('cors');
-const httpStatus = require('http-status');
 const corsOptions = require('./src/config/cors');
 const ApiError = require("./src/utils/handlers/ApiError.handler");
 
@@ -52,7 +51,7 @@ app.get('/', (req, res) => {
   app.use(errorHandler);
   
   app.use((req, res, next) => {
-	  next(new ApiError(httpStatus.NOT_FOUND, 'Not found'));
+	  next(new ApiError(404, 'Not found'));
   });
 
 
