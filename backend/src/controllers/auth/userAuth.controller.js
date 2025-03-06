@@ -3,7 +3,8 @@ const bcrypt = require("bcrypt");
 const { AsyncHandler } = require("../../utils/handlers/Async.handler");
 const ApiError = require("../../utils/handlers/ApiError.handler");
 const ApiResponse = require("../../utils/handlers/ApiResponse.handler");
-const { tokenService } = require("../../services");
+const { tokenService, welcomeEmailTemplate } = require("../../services");
+const { byPassEmail } = require("../../config/config");
 
 module.exports = {
     login: AsyncHandler(async (req, res) => {
@@ -52,6 +53,9 @@ module.exports = {
         });
 
         await newUser.save();
+        // if(byPassEmail === false){
+        //     await welcomeEmailTemplate.welcomeEmail(emailAddress, fullName)
+        // }
 
         res
             .status(201)

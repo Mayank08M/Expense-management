@@ -170,7 +170,6 @@ module.exports = {
             delete item.totalDirectExpense;
             delete item.totalDirectIncome;
         });
-        console.log(result)
 
         res.status(200).json(
             new ApiResponse(200, result, 'Data retrieved successfully.')
