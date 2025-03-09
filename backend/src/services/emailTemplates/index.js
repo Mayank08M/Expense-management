@@ -1,3 +1,3 @@
-module.exports = {
-    welcomeTemplate: require('./welcome')
-}
+// module.exports = {
+//     welcomeTemplate: require('./welcome')
+// }

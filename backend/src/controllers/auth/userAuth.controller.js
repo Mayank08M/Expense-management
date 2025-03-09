@@ -3,8 +3,7 @@ const bcrypt = require("bcrypt");
 const { AsyncHandler } = require("../../utils/handlers/Async.handler");
 const ApiError = require("../../utils/handlers/ApiError.handler");
 const ApiResponse = require("../../utils/handlers/ApiResponse.handler");
-const { tokenService, welcomeEmailTemplate } = require("../../services");
-const { byPassEmail } = require("../../config/config");
+const { tokenService } = require("../../services");
 
 module.exports = {
     login: AsyncHandler(async (req, res) => {

@@ -6,5 +6,5 @@ module.exports = {
     dashboardService: require('./dashboard/dashboard.service'),
     directExpenseService: require('./directExpense/directExpense.service'),
     directIncomeService: require('./directIncome/directIncome.service'),
-    welcomeEmailTemplate: require('./emailTemplates/welcome')
+    // welcomeEmailTemplate: require('./emailTemplates/welcome')
 }
